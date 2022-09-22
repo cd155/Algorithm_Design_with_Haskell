@@ -1,4 +1,4 @@
-module Intro.Exercise where
+module Basics where
 
 {-
     1.1 Basic types and functions
