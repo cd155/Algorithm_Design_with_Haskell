@@ -1,5 +1,9 @@
 module Sorting where
-
+{-
+    Passing sequentially over a list, 
+    comparing each value to the one immediately after it.   
+    If the first value is greater than the second, their positions are switched.
+-}
 bubbleSort :: Ord a => [a] -> [a]
 bubbleSort xs
     | xs == bsInOnePass xs = xs
@@ -16,6 +20,7 @@ bsInOnePass (x1:x2:xs) = min x1 x2: bsInOnePass (max x1 x2:xs)
     sort the first half
     sort the second half
     merge first and second
+    repeat steps for its first and second
 -}
 mergeSort :: Ord a => [a] -> [a]
 mergeSort [] = []
@@ -30,19 +35,30 @@ merge (x:xs) (y:ys)
     | x <= y = x : merge xs (y:ys)
     | otherwise = y : merge (x:xs) ys
 
-pivotSort :: Ord a => [a] -> [a]
-pivotSort [] = []
-pivotSort [x] = [x]
-pivotSort xs = pivotSort left ++ mid ++ pivotSort right
+{-
+    Select a pivot
+    move everything smaller than the pivot to the left
+    move everything great than  the pivot to the right
+    position pivot(s) in the middle
+    repeat steps for its left and right
+-}
+quickSort :: Ord a => [a] -> [a]
+quickSort [] = []
+quickSort [x] = [x]
+quickSort xs = quickSort left ++ mid ++ quickSort right
     where p = xs !! (length xs `div` 2)
-          -- sorted list divide by three parts
-          (left,mid,right) = pivotHelper p xs ([],[],[])
+          (left,mid,right) = qsHelper p xs ([],[],[])
 
-pivotHelper :: Ord a => a -> [a] -> ([a],[a],[a])-> ([a],[a],[a])
-pivotHelper _ [] tri = tri
-pivotHelper p (x:xs) (left,mid,right)
-    | x < p = pivotHelper p xs (left++[x], mid, right)
-    | x == p = pivotHelper p xs (left, mid++[x], right)
-    | otherwise = pivotHelper p xs (left, mid, right++[x])
+-- move elements to left, mid, and right segments
+qsHelper :: Ord a => a -> [a] -> ([a],[a],[a])-> ([a],[a],[a])
+qsHelper _ [] tri = tri
+qsHelper p (x:xs) (left,mid,right)
+    | x < p = qsHelper p xs (left++[x], mid, right)
+    | x == p = qsHelper p xs (left, mid++[x], right)
+    | otherwise = qsHelper p xs (left, mid, right++[x])
 
+{-
 
+-}
+radixSort :: Ord a => [a] -> [a]
+radixSort [] = []
