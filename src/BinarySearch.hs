@@ -87,9 +87,50 @@ searchRAHelper t xs index
     | otherwise = if head xs > xs !! mid
         then searchRAHelper t (fst splitted) index
         else searchRAHelper t (snd splitted) index+mid
-
     where mid = length xs `div` 2
           splitted = splitAt mid xs
 
 sraArrX :: [Nat]
 sraArrX = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14]
+
+{-
+    Search in a sorted array, but you don't know the size of it, turn the target's index
+    
+    elementAt :: Nat -> [Nat]-> Nat
+    return the element in the index, if index is out of bound return -1
+-}
+searchWithNoSize :: Nat -> [Nat] -> Nat
+searchWithNoSize t xs = searchWithNoSizeHelper t xs range
+    where range = findInterval t xs
+
+-- linear search after get the interval
+searchWithNoSizeHelper :: Nat -> [Nat] -> (Nat, Nat) -> Nat
+searchWithNoSizeHelper t xs range
+    | elementAt start xs == t = start
+    | start > end = error "The number does not in this list."
+    | otherwise = searchWithNoSizeHelper t xs (start+1, end)
+    where start = fst range
+          end = snd range
+
+{-
+    t: target
+    xs: the sorted list
+-}
+findInterval :: Nat -> [Nat] -> (Nat, Nat)
+findInterval t xs = findIntervalHelper t xs 1
+
+-- binary search find the interval by increment base on 2^k
+findIntervalHelper :: Nat -> [Nat] -> Nat -> (Nat, Nat)
+findIntervalHelper t xs step 
+    | elementAt 0 xs == t = (0, 0)
+    | elementAt step xs == t = (step, step)
+    | elementAt step xs == -1 = (step `div` 2, step) -- move up prevent an infinite loop
+    | t < elementAt step xs = (step `div` 2, step)
+    | t > elementAt step xs = findIntervalHelper t xs (step*2)
+    | otherwise = error "not an exhaustive match" -- not sure if it is exhaustive match
+
+-- fake the elementAt method by using length method
+elementAt :: Nat -> [Nat]-> Nat
+elementAt index xs
+    | index >= length xs = -1
+    | otherwise = xs !! index
