@@ -103,14 +103,17 @@ searchWithNoSize :: Nat -> [Nat] -> Nat
 searchWithNoSize t xs = searchWithNoSizeHelper t xs range
     where range = findInterval t xs
 
--- linear search after get the interval
+-- binary search after get the interval
 searchWithNoSizeHelper :: Nat -> [Nat] -> (Nat, Nat) -> Nat
 searchWithNoSizeHelper t xs range
-    | elementAt start xs == t = start
-    | start > end = error "The number does not in this list."
-    | otherwise = searchWithNoSizeHelper t xs (start+1, end)
+    | start == end = if elementAt start xs == t
+        then start else error "The number does not in this list."
+    | (t <= elementAt mid xs) || (elementAt mid xs == -1) = 
+        searchWithNoSizeHelper t xs (start, mid)
+    | otherwise = searchWithNoSizeHelper t xs (mid+1, end)
     where start = fst range
           end = snd range
+          mid = (start + end) `div` 2
 
 {-
     t: target
@@ -121,7 +124,7 @@ findInterval t xs = findIntervalHelper t xs 1
 
 -- binary search find the interval by increment base on 2^k
 findIntervalHelper :: Nat -> [Nat] -> Nat -> (Nat, Nat)
-findIntervalHelper t xs step 
+findIntervalHelper t xs step
     | elementAt 0 xs == t = (0, 0)
     | elementAt step xs == t = (step, step)
     | elementAt step xs == -1 = (step `div` 2, step) -- move up prevent an infinite loop
