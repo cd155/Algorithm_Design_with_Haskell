@@ -137,3 +137,48 @@ elementAt :: Nat -> [Nat]-> Nat
 elementAt index xs
     | index >= length xs = -1
     | otherwise = xs !! index
+
+{-
+    Given a sorted array of strings that is interspersed with empty strings, 
+    write a method to find the location of a given string.
+-}
+sparseSearch :: String -> [String] -> Nat
+sparseSearch "" xs = error "linear search for the first empty string."
+sparseSearch t xs = sparseSearchHelper t xs (0, length xs - 1)
+
+{-
+    t: the target
+    xs: the list
+    range: the tracking range
+-}
+sparseSearchHelper :: String -> [String] -> (Nat, Nat) -> Nat
+sparseSearchHelper t xs range
+    | start == end = if xs !! start == t then start
+        else error "The string does not in this list."
+    | xs !! mid == "" = 
+        case linearSearchLeft t xs (start, mid) of 
+            Nothing -> sparseSearchHelper t xs (mid+1, end)
+            Just True -> sparseSearchHelper t xs (start, mid)
+            Just False -> sparseSearchHelper t xs (mid+1, end)
+    | xs !! mid /= "" = 
+        case t <= xs !! mid of
+            True -> sparseSearchHelper t xs (start, mid)
+            False -> sparseSearchHelper t xs (mid+1, end)
+    | otherwise = error "Other condition"
+    where start = fst range
+          end = snd range 
+          mid = (start + end) `div` 2
+
+
+-- linear search to the left until find the indicator
+linearSearchLeft :: String -> [String] -> (Nat, Nat) -> Maybe Bool
+linearSearchLeft t xs range 
+    | end < start  = Nothing
+    | (xs !! end /= "") && (t <= xs !! end ) = Just True -- left
+    | (xs !! end /= "") && (t > xs !! end ) = Just False -- right
+    | otherwise = linearSearchLeft t xs (start, end-1)
+    where start = fst range
+          end = snd range
+
+ssArrX :: [String]
+ssArrX = ["at", "", "", "", "ball", "", "", "car", "", "", "dad", "", ""]
