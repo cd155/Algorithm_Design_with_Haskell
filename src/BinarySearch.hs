@@ -5,6 +5,7 @@
 module BinarySearch where
 
 import Basics (Nat)
+import Data.Bits (Bits(shiftR, (.&.)))
 
 {-
     Given f and t, find x where t = f (x)
@@ -39,6 +40,7 @@ binarySearch'' f t = seek
                       where m = (a + b) `div` 2
 
 {-
+    10.3
     There is a sorted number array have been rotated with an unknown pivot.
     Give a target number, return its index in this array
     
@@ -94,6 +96,7 @@ sraArrX :: [Nat]
 sraArrX = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14]
 
 {-
+    10.4
     Search in a sorted array, but you don't know the size of it, turn the target's index
     
     elementAt :: Nat -> [Nat]-> Nat
@@ -108,7 +111,7 @@ searchWithNoSizeHelper :: Nat -> [Nat] -> (Nat, Nat) -> Nat
 searchWithNoSizeHelper t xs range
     | start == end = if elementAt start xs == t
         then start else error "The number does not in this list."
-    | (t <= elementAt mid xs) || (elementAt mid xs == -1) = 
+    | (t <= elementAt mid xs) || (elementAt mid xs == -1) =
         searchWithNoSizeHelper t xs (start, mid)
     | otherwise = searchWithNoSizeHelper t xs (mid+1, end)
     where start = fst range
@@ -139,6 +142,7 @@ elementAt index xs
     | otherwise = xs !! index
 
 {-
+    10.5
     Given a sorted array of strings that is interspersed with empty strings, 
     write a method to find the location of a given string.
 -}
@@ -155,24 +159,24 @@ sparseSearchHelper :: String -> [String] -> (Nat, Nat) -> Nat
 sparseSearchHelper t xs range
     | start == end = if xs !! start == t then start
         else error "The string does not in this list."
-    | xs !! mid == "" = 
-        case linearSearchLeft t xs (start, mid) of 
+    | xs !! mid == "" =
+        case linearSearchLeft t xs (start, mid) of
             Nothing -> sparseSearchHelper t xs (mid+1, end)
             Just True -> sparseSearchHelper t xs (start, mid)
             Just False -> sparseSearchHelper t xs (mid+1, end)
-    | xs !! mid /= "" = 
+    | xs !! mid /= "" =
         case t <= xs !! mid of
             True -> sparseSearchHelper t xs (start, mid)
             False -> sparseSearchHelper t xs (mid+1, end)
     | otherwise = error "Other condition"
     where start = fst range
-          end = snd range 
+          end = snd range
           mid = (start + end) `div` 2
 
 
 -- linear search to the left until find the indicator
 linearSearchLeft :: String -> [String] -> (Nat, Nat) -> Maybe Bool
-linearSearchLeft t xs range 
+linearSearchLeft t xs range
     | end < start  = Nothing
     | (xs !! end /= "") && (t <= xs !! end ) = Just True -- left
     | (xs !! end /= "") && (t > xs !! end ) = Just False -- right
@@ -182,3 +186,75 @@ linearSearchLeft t xs range
 
 ssArrX :: [String]
 ssArrX = ["at", "", "", "", "ball", "", "", "car", "", "", "dad", "", ""]
+
+{-
+    10.6
+    Imagine you have a 20 GB file with one string per line. 
+    Explain how you would sort the file.
+
+    Solution:
+    divide the file into small trunks. 
+    Sorted each chunks separately. 
+    Merge chunks (similar to merge in merge sorting)
+-}
+
+{-
+    min: length of string
+    x: the value
+-}
+showBitVector :: Int -> Integer -> String
+showBitVector min_ 0 = replicate min_ '0'
+showBitVector min_ x = showBitVector (min_ - 1) (shiftR x 1) ++ show (x .&. 1)
+
+{-
+    10.7
+    Given an input file with four billion non-negative integers, 
+    provide an algorithm to generate an integer that is not contained in the file. 
+    Assume you have 1 GB of memory available for this task.
+
+    What if you only have 1 MB memory?
+-}
+type Bit = [Bool]
+
+setBit :: Nat -> Bit -> Bit
+setBit index xs = take index xs ++ True : drop (index+1) xs
+
+setListBits :: [Nat] -> Bit -> Bit
+setListBits [] ys = ys
+setListBits (x:xs) ys = setListBits xs
+    (if ys !! x then ys else setBit x ys)
+
+genNumHelper :: Bit -> Nat -> Nat
+genNumHelper [] track = track
+genNumHelper (x:xs) track
+    | x = genNumHelper xs (track+1) 
+    | otherwise = track
+
+genNum :: [Nat] -> Nat
+genNum xs = genNumHelper (setListBits xs initalBit) 0
+    where initalBit = replicate 10 False
+
+{-
+    10.8
+    You have an array with all the numbers from 1 to N, where N is at most 32,000. 
+    The array may have duplicate entries and you do not know what N is. 
+    With only 4 kilobytes of memory available, 
+    how would you print all duplicate elements in the array?
+
+    Solution: 1 kb = 8000 bits
+              4 kb = 32000 bits
+    
+    We can use a bit-liked structure to map all possible integer
+    1. initialize a 32000 long bit ([Bool]) to all False
+    2. if the value of index (given number) is false 
+            set the value to its index with True
+       else
+            print the value
+-}
+
+{-
+    10.9
+    Given an M x N matrix in which each row and 
+    each column is sorted in ascending order, 
+    write a method to find an element.
+-}
