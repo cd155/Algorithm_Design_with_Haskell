@@ -120,6 +120,7 @@ qsHelper p (x:xs) (left,mid,right)
     | otherwise = qsHelper p xs (left, mid, right++[x])
 
 {-
+    10.1
     You are given two sorted arrays, A and B, 
     where A has a large enough buffer at the end to hold B. 
     Write a method to merge B into A in sorted order.
@@ -136,6 +137,7 @@ smArrX = [1, 4, 10, 100, 1000]
 smArrY = [0, 0, 2, 1001]
 
 {-
+    10.2
     Giving an array of strings, 
     write a method to group all the anagrams
 -}
