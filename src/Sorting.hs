@@ -153,9 +153,64 @@ gAHelper (x:xs) ys = gAHelper xs (gABuilder x ys)
 -- give a new string, add it to the result [[String]]
 gABuilder :: String -> [[String]]-> [[String]]
 gABuilder x [] = [[x]]
-gABuilder x (y:ys) 
+gABuilder x (y:ys)
     | sort x == sort (head y) = (x:y):ys
     | otherwise = [y] ++ gABuilder x ys
 
 gaArrX = ["eat","tea","tan","ate","nat","bat"]
 gaArrY = [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+{-
+    10.11
+    In an array of integers, 
+    a "peak" is an element which is >= the adjacent integers
+    a "valley" is an element which is <= to the adjacent integers. 
+    For example, in the array {5, 8, 6, 2, 3, 4, 6}, 
+    {8, 6} are peaks and {5, 2} are valleys. 
+    Given an array of integers, 
+    sort the array into an alternating sequence of peaks and valleys
+
+    Explain: it is better draw the plot in the graph.
+    The peck and valley will show clear in the 2-D graph, 
+    the index is on the x-axis, the value of index on the y-axis
+
+    alternating sequence mean, valleys and pecks are alternating
+
+    input: 5,3,1,4,2 
+    peaks: 5, 4
+    valley: 1, 2
+
+    output: 5,1,4,2,3
+    peaks: (5,4,3)
+    valley: (1,2)
+-}
+data Movement = Peak | Valley | Start
+
+instance Eq Movement where
+    Peak == Peak = True
+    Valley == Valley = True
+    Start == Start = True
+    Peak == Valley = False
+    Peak == Start = False
+    Valley == Peak = False
+    Valley == Start = False
+    Start == Peak = False
+    Start == Valley = False
+
+shufflePeakValley :: Ord a => [a] -> [a]
+shufflePeakValley = shuffleHelper Start
+
+shuffleHelper :: Ord a => Movement -> [a] -> [a]
+shuffleHelper _ [] = []
+shuffleHelper _ [x] = [x]
+shuffleHelper Start (x1:x2:xs) 
+    | x1 >= x2 = x1: shuffleHelper Valley (x2:xs)
+    | otherwise = x1: shuffleHelper Peak (x2:xs)
+shuffleHelper Peak (x1:x2:xs) 
+    | x1 < x2 = x2: shuffleHelper Valley (x1:xs)
+    | otherwise = x1: shuffleHelper Valley (x2:xs)
+shuffleHelper Valley (x1:x2:xs)
+    | x1 > x2 = x2: shuffleHelper Peak (x1:xs)
+    | otherwise = x1: shuffleHelper Peak (x2:xs)
+
+pvArray = [5, 3, 1, 2, 3]
