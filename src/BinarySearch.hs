@@ -92,8 +92,8 @@ searchRAHelper t xs index
     where mid = length xs `div` 2
           splitted = splitAt mid xs
 
-sraArrX :: [Nat]
-sraArrX = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14]
+sraArr :: [Nat]
+sraArr = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14]
 
 {-
     10.4
@@ -106,17 +106,15 @@ searchWithNoSize :: Nat -> [Nat] -> Nat
 searchWithNoSize t xs = searchWithNoSizeHelper t xs range
     where range = findInterval t xs
 
--- binary search after get the interval
+-- binary search with interval
 searchWithNoSizeHelper :: Nat -> [Nat] -> (Nat, Nat) -> Nat
-searchWithNoSizeHelper t xs range
+searchWithNoSizeHelper t xs (start, end)
     | start == end = if elementAt start xs == t
         then start else error "The number does not in this list."
     | (t <= elementAt mid xs) || (elementAt mid xs == -1) =
         searchWithNoSizeHelper t xs (start, mid)
     | otherwise = searchWithNoSizeHelper t xs (mid+1, end)
-    where start = fst range
-          end = snd range
-          mid = (start + end) `div` 2
+    where mid = (start + end) `div` 2
 
 {-
     t: target
@@ -156,7 +154,7 @@ sparseSearch t xs = sparseSearchHelper t xs (0, length xs - 1)
     range: the tracking range
 -}
 sparseSearchHelper :: String -> [String] -> (Nat, Nat) -> Nat
-sparseSearchHelper t xs range
+sparseSearchHelper t xs (start, end)
     | start == end = if xs !! start == t then start
         else error "The string does not in this list."
     | xs !! mid == "" =
@@ -169,23 +167,19 @@ sparseSearchHelper t xs range
             True -> sparseSearchHelper t xs (start, mid)
             False -> sparseSearchHelper t xs (mid+1, end)
     | otherwise = error "Other condition"
-    where start = fst range
-          end = snd range
-          mid = (start + end) `div` 2
+    where mid = (start + end) `div` 2
 
 
 -- linear search to the left until find the indicator
 linearSearchLeft :: String -> [String] -> (Nat, Nat) -> Maybe Bool
-linearSearchLeft t xs range
+linearSearchLeft t xs (start, end)
     | end < start  = Nothing
     | (xs !! end /= "") && (t <= xs !! end ) = Just True -- left
     | (xs !! end /= "") && (t > xs !! end ) = Just False -- right
     | otherwise = linearSearchLeft t xs (start, end-1)
-    where start = fst range
-          end = snd range
 
-ssArrX :: [String]
-ssArrX = ["at", "", "", "", "ball", "", "", "car", "", "", "dad", "", ""]
+ssArr :: [String]
+ssArr = ["at", "", "", "", "ball", "", "", "car", "", "", "dad", "", ""]
 
 {-
     10.6
@@ -227,7 +221,7 @@ setListBits (x:xs) ys = setListBits xs
 genNumHelper :: Bit -> Nat -> Nat
 genNumHelper [] track = track
 genNumHelper (x:xs) track
-    | x = genNumHelper xs (track+1) 
+    | x = genNumHelper xs (track+1)
     | otherwise = track
 
 genNum :: [Nat] -> Nat
@@ -257,4 +251,44 @@ genNum xs = genNumHelper (setListBits xs initalBit) 0
     Given an M x N matrix in which each row and 
     each column is sorted in ascending order, 
     write a method to find an element.
+-}
+sortedMatrixSearch :: Ord a => a -> [[a]] -> (Nat, Nat)
+sortedMatrixSearch t xs = 
+    (targetRowIndex, binarySearch t targetRow (0, length targetRow - 1))
+    where targetRowIndex = findRow t xs (0, length xs - 1)
+          targetRow = xs !! targetRowIndex
+
+-- find the target row
+findRow :: Ord a => a -> [[a]] -> (Nat, Nat) -> Nat
+findRow t xs (start, end)
+    | start == end = start
+    | t <= last (xs !! mid) = findRow t xs (start, mid)
+    | otherwise = findRow t xs (mid+1, end) -- right
+    where mid = (start + end) `div` 2
+
+-- generic binary search with interval
+binarySearch :: Ord a => a -> [a] -> (Nat, Nat)-> Nat
+binarySearch t xs (start, end)
+    | start == end = if xs !! start == t then start
+        else error "The string does not in this list."
+    | t <= xs !! mid = binarySearch t xs (start, mid)
+    | otherwise = binarySearch t xs (mid+1, end)
+    where mid = (start + end) `div` 2
+
+-- test case
+bsArray = [1,2,3,5,6,10,20,30,50,100,101,1101]
+matrixArray = [[1,4,5,7],
+               [10,17,19,21],
+               [101,102,110,200],
+               [201,202,203,500]]
+
+{-
+    10.10
+    Imagine you are reading in a stream of integers.
+    Periodically, you wish to be able to look up the rank of a number x 
+    (the number of values less than or equal to x). 
+    Implement the data structures and algorithms to support these operations. 
+    
+    track (int x), which is called when each number is generated
+    getRankOfNumber(int x), returns the number of values <= x (not including x itself).
 -}
