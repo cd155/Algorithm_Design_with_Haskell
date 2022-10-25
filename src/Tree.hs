@@ -1,10 +1,12 @@
 module Tree where
 
+import Basics (Nat)
+
 -- A tree contains zero or more trees
-data Tree a = Null1| Node1 a [Tree a]
+data Tree a = Null1| Node1 a [Tree a] deriving Show
 
 -- A binary tree contain max two trees
-data BiTree a = Null | Node a (BiTree a) (BiTree a)
+data BiTree a = Null | Node a (BiTree a) (BiTree a) deriving Show
 
 {-
     What we defined here is a Direct Tree. (linked internally)
@@ -60,3 +62,35 @@ testTree =
             (Node 3 Null Null) (Node 7 Null Null)) 
         (Node 20 
             Null (Node 30 Null Null))
+
+{-
+    The (binary) heap data structure 
+    is an array object that we can view as a nearly complete binary tree 
+
+    Min Heaps: each node is smaller than its children
+    Max Heaps: each node is greater than its children
+
+    It would be better to implement a heap with an array.
+    Using tree structure require more information share in the same level
+-} 
+
+testHeap = [10, 5, 20, 3, 7, 30]
+
+-- Append the element to the end of the list
+insert :: a -> [a] -> [a]
+insert x xs = xs ++ [x]
+
+viewAsTree :: [a] -> BiTree a
+viewAsTree = viewAsTreeHelper 0
+
+viewAsTreeHelper :: Nat -> [a] -> BiTree a
+viewAsTreeHelper _ [] = Null
+viewAsTreeHelper track xs
+    | track < size = 
+        Node (xs!!track) (viewAsTreeHelper leftTrack xs) (viewAsTreeHelper rightTrack xs)
+    | otherwise = Null
+    where size = length xs
+          (leftTrack, rightTrack) = 
+            if track == 0 then (1 ,2) else (2*track + 1, 2*track + 2)
+
+-- maxHeapify :: [a] -> [a]
