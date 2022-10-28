@@ -80,7 +80,7 @@ testHeap = [10, 5, 20, 3, 7, 30]
 insert :: a -> [a] -> [a]
 insert x xs = xs ++ [x]
 
--- view the array as a heap structure
+-- View the array as a heap structure
 viewAsTree :: [a] -> BiTree a
 viewAsTree = viewAsTreeHelper 0
 
@@ -107,14 +107,14 @@ buildMaxHeapHelper xs index
 maxHeapify :: Ord a => [a] -> Nat -> [a]
 maxHeapify xs index
     | largestIndex /= index = 
-        -- swap index with largest
+        -- swap index with largest, then repeat maxHeapify
         maxHeapify (swapTwoInList index largestIndex xs) largestIndex  
     | otherwise = xs
     where largestIndex = maxInThree xs index leftTrack rightTrack
           (leftTrack, rightTrack) =
             if index == 0 then (1 ,2) else (2*index + 1, 2*index + 2)
 
--- find the largest index base on the value on three elements
+-- Find the largest index base on the value on three elements
 maxInThree :: Ord a => [a] -> Nat -> Nat -> Nat -> Nat
 maxInThree xs parent left right
     | left >= length xs = parent
@@ -137,6 +137,7 @@ swapTwoInList i j xs
     |otherwise = xs
     where (firstHalf1, secondHalf1) = splitAt i xs
           (firstHalf2, secondHalf2) = splitAt j xs
+
 {-
     Heap Sort algorithm
     1. create a max-heap
