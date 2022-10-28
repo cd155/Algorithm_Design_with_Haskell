@@ -31,7 +31,7 @@ data BiTree a = Null | Node a (BiTree a) (BiTree a) deriving Show
 
 -- Visit order: the left branch, the mid node, and the right branch
 inOrderTraverse :: BiTree a -> [a]
-inOrderTraverse Null = [] 
+inOrderTraverse Null = []
 inOrderTraverse (Node n Null Null) = [n]
 inOrderTraverse (Node n left Null) = inOrderTraverse left ++ [n]
 inOrderTraverse (Node n Null right) = n: inOrderTraverse right
@@ -40,7 +40,7 @@ inOrderTraverse (Node n left right) =
 
 -- Visit order: the mid node, the left branch, and the right branch 
 preOrderTraverse :: BiTree a -> [a]
-preOrderTraverse Null = [] 
+preOrderTraverse Null = []
 preOrderTraverse (Node n Null Null) = [n]
 preOrderTraverse (Node n left Null) = n: preOrderTraverse left
 preOrderTraverse (Node n Null right) = n: preOrderTraverse right
@@ -49,18 +49,18 @@ preOrderTraverse (Node n left right) =
 
 -- Visit order: the left branch, the right branch and the mid node, 
 postOrderTraverse :: BiTree a -> [a]
-postOrderTraverse Null = [] 
+postOrderTraverse Null = []
 postOrderTraverse (Node n Null Null) = [n]
 postOrderTraverse (Node n left Null) = postOrderTraverse left ++ [n]
 postOrderTraverse (Node n Null right) = postOrderTraverse right ++ [n]
 postOrderTraverse (Node n left right) =
     postOrderTraverse left ++ postOrderTraverse right ++ [n]
 
-testTree = 
-    Node 10 
-        (Node 5 
-            (Node 3 Null Null) (Node 7 Null Null)) 
-        (Node 20 
+testTree =
+    Node 10
+        (Node 5
+            (Node 3 Null Null) (Node 7 Null Null))
+        (Node 20
             Null (Node 30 Null Null))
 
 {-
@@ -72,7 +72,7 @@ testTree =
 
     It would be better to implement a heap with an array.
     Using tree structure require more information share in the same level
--} 
+-}
 
 testHeap = [10, 5, 20, 3, 7, 30]
 
@@ -80,17 +80,75 @@ testHeap = [10, 5, 20, 3, 7, 30]
 insert :: a -> [a] -> [a]
 insert x xs = xs ++ [x]
 
+-- view the array as a heap structure
 viewAsTree :: [a] -> BiTree a
 viewAsTree = viewAsTreeHelper 0
 
 viewAsTreeHelper :: Nat -> [a] -> BiTree a
 viewAsTreeHelper _ [] = Null
 viewAsTreeHelper track xs
-    | track < size = 
+    | track < size =
         Node (xs!!track) (viewAsTreeHelper leftTrack xs) (viewAsTreeHelper rightTrack xs)
     | otherwise = Null
     where size = length xs
-          (leftTrack, rightTrack) = 
+          (leftTrack, rightTrack) =
             if track == 0 then (1 ,2) else (2*track + 1, 2*track + 2)
 
--- maxHeapify :: [a] -> [a]
+-- Given an array, create a Max-Heap 
+buildMaxHeap :: Ord a => [a] -> [a]
+buildMaxHeap xs = buildMaxHeapHelper xs (length xs `div` 2)
+
+buildMaxHeapHelper :: Ord a => [a] -> Nat -> [a]
+buildMaxHeapHelper xs index 
+    | index < 0 = xs
+    | otherwise = buildMaxHeapHelper (maxHeapify xs index) (index-1)
+
+-- Given an Array and the index of the node, perform maxHeapify
+maxHeapify :: Ord a => [a] -> Nat -> [a]
+maxHeapify xs index
+    | largestIndex /= index = 
+        -- swap index with largest
+        maxHeapify (swapTwoInList index largestIndex xs) largestIndex  
+    | otherwise = xs
+    where largestIndex = maxInThree xs index leftTrack rightTrack
+          (leftTrack, rightTrack) =
+            if index == 0 then (1 ,2) else (2*index + 1, 2*index + 2)
+
+-- find the largest index base on the value on three elements
+maxInThree :: Ord a => [a] -> Nat -> Nat -> Nat -> Nat
+maxInThree xs parent left right
+    | left >= length xs = parent
+    | left == (length xs - 1) = 
+        if xs!!parent >= xs!!left then parent else left
+    | xs!!parent >= xs!!left && xs!!parent >= xs!!right = parent
+    | xs!!left >= xs!!parent && xs!!left >= xs!!right = left
+    | otherwise = right
+
+-- Given two indexes and an list, swap the values in the list
+swapTwoInList :: Nat -> Nat -> [a] -> [a]
+swapTwoInList _ _ [] = []
+swapTwoInList i j xs
+    | i < j = firstHalf1 ++ [xs!!j] ++
+        take (j-i-1) (tail secondHalf1) ++ [xs!!i] ++
+        drop (j-i) (tail secondHalf1)
+    | i > j = firstHalf2 ++ [xs!!i] ++
+        take (i-j-1) (tail secondHalf2) ++ [xs!!j] ++
+        drop (i-j) (tail secondHalf2)
+    |otherwise = xs
+    where (firstHalf1, secondHalf1) = splitAt i xs
+          (firstHalf2, secondHalf2) = splitAt j xs
+{-
+    Heap Sort algorithm
+    1. create a max-heap
+    2. swap the first element(the largest) with the last element
+    3. lock the last element, update the new heap, perform max-heap on new heap
+    4. repeat step 2 until the list has one or less elements
+-}
+heapSort :: Ord a => [a] -> [a]
+heapSort xs = heapSortHelper (buildMaxHeap xs)
+
+heapSortHelper :: Ord a => [a] -> [a]
+heapSortHelper [] = [] 
+heapSortHelper [x] = [x] 
+heapSortHelper (x:xs) = heapSortHelper (maxHeapify swapArr 0) ++ [x]
+    where swapArr = last xs : init xs
