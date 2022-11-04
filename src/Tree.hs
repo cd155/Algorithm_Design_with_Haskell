@@ -99,16 +99,16 @@ buildMaxHeap :: Ord a => [a] -> [a]
 buildMaxHeap xs = buildMaxHeapHelper xs (length xs `div` 2)
 
 buildMaxHeapHelper :: Ord a => [a] -> Nat -> [a]
-buildMaxHeapHelper xs index 
+buildMaxHeapHelper xs index
     | index < 0 = xs
     | otherwise = buildMaxHeapHelper (maxHeapify xs index) (index-1)
 
 -- Given an Array and the index of the node, perform maxHeapify
 maxHeapify :: Ord a => [a] -> Nat -> [a]
 maxHeapify xs index
-    | largestIndex /= index = 
+    | largestIndex /= index =
         -- swap index with largest, then repeat maxHeapify
-        maxHeapify (swapTwoInList index largestIndex xs) largestIndex  
+        maxHeapify (swapTwoInList index largestIndex xs) largestIndex
     | otherwise = xs
     where largestIndex = maxInThree xs index leftTrack rightTrack
           (leftTrack, rightTrack) =
@@ -118,7 +118,7 @@ maxHeapify xs index
 maxInThree :: Ord a => [a] -> Nat -> Nat -> Nat -> Nat
 maxInThree xs parent left right
     | left >= length xs = parent
-    | left == (length xs - 1) = 
+    | left == (length xs - 1) =
         if xs!!parent >= xs!!left then parent else left
     | xs!!parent >= xs!!left && xs!!parent >= xs!!right = parent
     | xs!!left >= xs!!parent && xs!!left >= xs!!right = left
@@ -149,8 +149,8 @@ heapSort :: Ord a => [a] -> [a]
 heapSort xs = heapSortHelper (buildMaxHeap xs)
 
 heapSortHelper :: Ord a => [a] -> [a]
-heapSortHelper [] = [] 
-heapSortHelper [x] = [x] 
+heapSortHelper [] = []
+heapSortHelper [x] = [x]
 heapSortHelper (x:xs) = heapSortHelper (maxHeapify swapArr 0) ++ [x]
     where swapArr = last xs : init xs
 
@@ -208,5 +208,24 @@ createACompletedHeap :: [BiTree a] -> [Maybe a]
 createACompletedHeap [] = []
 createACompletedHeap [Null] = []
 createACompletedHeap (Null: xs) = Nothing: createACompletedHeap xs
-createACompletedHeap (Node n left right:xs) = 
+createACompletedHeap (Node n left right:xs) =
     Just n: createACompletedHeap (xs ++ [left, right])
+
+{-
+    4.2 Given a sorted (increasing order) array with unique integer elements, 
+    write an algo­rithm to create a binary search tree with minimal height.
+
+    Complete tree will create a tree with the minimal height
+-}
+createBalTree :: Ord a => [a] -> [a]
+createBalTree xs = createBalTreeHelper [xs]
+
+createBalTreeHelper :: Ord a => [[a]] -> [a]
+createBalTreeHelper [] = []
+createBalTreeHelper (x:xs)
+    | null x = createBalTreeHelper xs -- a few empty list be added, need to remove them
+    | otherwise = take 1 right ++ createBalTreeHelper (xs ++ [left, drop 1 right])
+    where mid = length x `div` 2
+          (left, right) = splitAt mid x
+
+sortedArray = [1,3,5,7,10,11,20]
