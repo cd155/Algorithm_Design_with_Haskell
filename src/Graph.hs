@@ -33,7 +33,12 @@ testGraph = ([0, 1, 2, 3, 4, 5],
 initMap :: Map Vertex Bool
 initMap = fromList [(0, False), (1, False), (2, False), (3, False), (4, False), (5, False)]
 
--- Giving a start vertex and an end vertex, find if the path exists
+{-
+    4.1: Given a directed graph, design an algorithm to find out 
+    whether there is a route between two nodes.
+
+    Giving a start vertex and an end vertex, find if the path exists
+-}
 isPathExist :: Graph -> Vertex -> Vertex -> Bool
 isPathExist g start end = if possEdges == [] then False else True
     where possEdges = findAllPaths g (findEdges g start) end initMap
