@@ -62,7 +62,7 @@ postOrderTraverse (Node n Null right) = postOrderTraverse right ++ [n]
 postOrderTraverse (Node n left right) =
     postOrderTraverse left ++ postOrderTraverse right ++ [n]
 
-testTree =
+testTree1 =
     Node 10
         (Node 5
             (Node 3 Null Null) (Node 7 Null Null))
@@ -187,28 +187,11 @@ findPath t (Node n left right)
         if null (findPath t left) && null (findPath t right)
         then [] else n: findPath t left ++ findPath t right
 
--- -- add a series of appendList together
--- findPathHelper :: [[a]] -> [[a]]-> [[a]]
--- findPathHelper xs [] = xs
--- findPathHelper [] _ = error "The start root cannot be empty."
--- findPathHelper (x:xs) (y:ys) = appendList x y ++ findPathHelper xs ys
-
--- {-
---     create all possible combination
---     Given a prefix, and a list of appending element,
---     create a list contain a possible combination.
---     for example, 
---     prefix: [5,4,10]
---     appending list: [4,1]
---     answer: [[5,4,10,4], [5,4,10,1]]
--- -} 
--- appendList :: [a] -> [a] -> [[a]]
--- appendList _ [] = [] -- finished appending
--- appendList prefix (y:ys) = (prefix ++ [y]) : appendList prefix ys
-
 {-
-    we can create a completed heap by using Breadth-first visit
-    then, we can trace back the path.
+    Breadth-first way to find the path in a completed tree
+    1. We can create a completed heap by using Breadth-first visit
+    2. find whether the destination node exist in the array
+    3. we can trace back the path, base on its index
 -}
 createACompletedHeap :: [BiTree a] -> [Maybe a]
 createACompletedHeap [] = []
@@ -240,3 +223,56 @@ createBalTreeHelper (x:xs)
           (left, right) = splitAt mid x
 
 sortedArray = [1,3,5,7,10,11,20]
+
+{-
+    4.4
+    Implement a function to check if a binary tree is balanced. 
+    For the purposes of this question, 
+    a balanced tree is defined to be a tree such that the heights 
+    of the two subtrees of any node never differ by more than one.
+-}
+-- Check whether two heights are different than two
+checkBalance :: BiTree a -> Bool
+checkBalance root = if diff > 2 then False else True
+    where pool = buildPool root 0
+          maxDepth = foldl1 max pool
+          minDepth = foldl1 min pool
+          diff = maxDepth - minDepth
+
+-- Create a collection that has all heights of leaves
+buildPool :: BiTree a -> Nat -> [Nat]
+buildPool Null depth = []
+buildPool (Node n Null Null) depth = [depth]
+buildPool (Node n left Null) depth = depth: buildPool left (depth+1)
+buildPool (Node n Null right) depth = depth: buildPool right (depth+1)
+buildPool (Node n left right) depth =
+    buildPool left (depth+1) ++ buildPool right (depth+1)
+
+-- test case
+testTree2 =
+    Node 1
+        (Node 7
+            (Node 2 Null Null)
+            (Node 6
+                (Node 5 Null Null)
+                (Node 11 Null Null)))
+        (Node 9
+            Null
+            (Node 9
+                (Node 5 Null Null)
+                Null))
+
+{-
+    4.5
+    Implement a function to check if a binary tree is a 
+    binary search tree: left trees (values) <= Node n < right trees
+-}
+-- Convert a tree to an array represent with in-order traverse
+validateBST :: Ord a => BiTree a -> Bool
+validateBST root = validateBSTHelper $ inOrderTraverse root
+
+-- If it is a BST, the list represent is in ascending order
+validateBSTHelper :: Ord a => [a] -> Bool
+validateBSTHelper [] = True
+validateBSTHelper [x] = True
+validateBSTHelper (x1:x2:xs) = (x1 <= x2) && validateBSTHelper(x2:xs)
