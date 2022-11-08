@@ -1,6 +1,6 @@
 module LinkedList where
 
-import Tree (BiTree(..))
+import Tree (BiTree(..), testTree2)
 import Basics (Nat)
 
 -- A sequence of nodes, simple very of graph
@@ -47,17 +47,3 @@ isPowerOfTwo 1 = True
 isPowerOfTwo x 
     | x `mod` 2 == 1 = False
     | otherwise = isPowerOfTwo (x `div` 2)
-
--- test case
-testTree =
-    Node 1
-        (Node 7
-            (Node 2 Null Null)
-            (Node 6
-                (Node 5 Null Null)
-                (Node 11 Null Null)))
-        (Node 9
-            Null
-            (Node 9
-                (Node 5 Null Null)
-                Null))
