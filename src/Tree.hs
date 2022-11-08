@@ -276,3 +276,28 @@ validateBSTHelper :: Ord a => [a] -> Bool
 validateBSTHelper [] = True
 validateBSTHelper [x] = True
 validateBSTHelper (x1:x2:xs) = (x1 <= x2) && validateBSTHelper(x2:xs)
+
+-- Balanced tree
+testTree3 = 
+    Node 10
+        (Node 5
+            (Node 1 Null Null)
+            (Node 9
+                (Node 7 Null Null)
+                Null))
+        (Node 40
+            (Node 20
+                (Node 11 Null Null)
+                (Node 30 Null Null))
+            (Node 50 Null Null))
+
+{-
+    Write an algorithm to find the in-order successor of a given node 
+    in a binary search tree. 
+    You may assume that each node has a link to its parent.
+
+    in-order successor: the sequenced next node
+-}
+
+-- the node is left
+-- the node has children
