@@ -8,6 +8,12 @@ data Tree a = Null1| Node1 a [Tree a] deriving Show
 -- A binary tree contain max two trees
 data BiTree a = Null | Node a (BiTree a) (BiTree a) deriving Show
 
+instance Ord a => Eq (BiTree a) where
+  Null == Null = True
+  Null == Node {} = False
+  Node {} == Null = False
+  Node x left1 right1 == Node y left2 right2 = (x == y) && (left1 == left2) && (right1 == right2)
+
 {-
     What we defined here is a Direct Tree. (linked internally)
 
@@ -215,11 +221,16 @@ createACompletedHeap (Node n left right:xs) =
     4.2 Given a sorted (increasing order) array with unique integer elements, 
     write an algo­rithm to create a binary search tree with minimal height.
 
-    Complete tree will create a tree with the minimal height
+    A complete tree will make a tree with the minimal height
 -}
 createBalTree :: Ord a => [a] -> [a]
 createBalTree xs = createBalTreeHelper [xs]
 
+{-
+    Each time split the array into two separated arrays
+    then, add new arrays to the queue.
+    the queue will handle separated arrays one by one and remove empty arrays
+-}
 createBalTreeHelper :: Ord a => [[a]] -> [a]
 createBalTreeHelper [] = []
 createBalTreeHelper (x:xs)
