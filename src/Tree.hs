@@ -192,13 +192,26 @@ findPath t (Node n left right)
     1. We can create a completed heap by using Breadth-first visit
     2. find whether the destination node exist in the array
     3. we can trace back the path, base on its index
+
+    Note: this only working for Complete Tree, a generic version requires
+    expand Null to match the highest height. 
+    Check listDepthHelper in LinkedList.hs
 -}
-createACompletedHeap :: [BiTree a] -> [Maybe a]
-createACompletedHeap [] = []
-createACompletedHeap [Null] = []
-createACompletedHeap (Null: xs) = Nothing: createACompletedHeap xs
-createACompletedHeap (Node n left right:xs) =
-    Just n: createACompletedHeap (xs ++ [left, right])
+createPerfectTree :: [BiTree a] -> [Maybe a]
+createPerfectTree [] = []
+createPerfectTree [Null] = []
+createPerfectTree (Null: xs) = Nothing: createPerfectTree xs
+createPerfectTree (Node n left right:xs) =
+    Just n: createPerfectTree (xs ++ [left, right])
+
+-- Fill in a binary tree with Nothing to make it a Perfect Trees
+createPerfectTree' :: Ord a => [BiTree a] -> [Maybe a]
+createPerfectTree' [] = []
+createPerfectTree' [Null] = []
+createPerfectTree' (Null: xs) =
+    if null list then [] else Nothing: createPerfectTree' (xs ++ [Null, Null])
+        where list = [x | x <- xs, x /= Null]
+createPerfectTree' (Node n left right:xs) = Just n: createPerfectTree' (xs ++ [left, right])
 
 {-
     4.2 Given a sorted (increasing order) array with unique integer elements, 
@@ -298,6 +311,9 @@ testTree3 =
 
     in-order successor: the sequenced next node
 -}
+
+-- findSuccessor :: Ord a => BiTree a -> a
+
 
 -- the node is left
 -- the node has children

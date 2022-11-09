@@ -1,6 +1,6 @@
 module LinkedList where
 
-import Tree (BiTree(..), testTree2)
+import Tree (BiTree(..), testTree2, createPerfectTree')
 import Basics (Nat)
 
 -- A sequence of nodes, simple very of graph
@@ -11,16 +11,7 @@ data LinkedList a = Null'| Node' a (LinkedList a) deriving Show
     a linked list of all the nodes at each depth.
 -}
 listDepth :: Ord a => BiTree a -> [[a]]
-listDepth root = divideTree (listDepthHelper [root])
-
--- Fill in the binary binary tree with Nothing to make it completed
-listDepthHelper :: Ord a => [BiTree a] -> [Maybe a]
-listDepthHelper [] = []
-listDepthHelper [Null] = []
-listDepthHelper (Null: xs) =
-    if null list then [] else Nothing: listDepthHelper (xs ++ [Null, Null])
-        where list = [x | x <- xs, x /= Null]
-listDepthHelper (Node n left right:xs) = Just n: listDepthHelper (xs ++ [left, right])
+listDepth root = divideTree (createPerfectTree' [root])
 
 -- Divide the complete tree base on depth into array of array
 divideTree :: [Maybe a] -> [[a]]
