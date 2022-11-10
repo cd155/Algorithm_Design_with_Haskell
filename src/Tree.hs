@@ -117,8 +117,7 @@ maxHeapify xs index
         maxHeapify (swapTwoInList index largestIndex xs) largestIndex
     | otherwise = xs
     where largestIndex = maxInThree xs index leftTrack rightTrack
-          (leftTrack, rightTrack) =
-            if index == 0 then (1 ,2) else (2*index + 1, 2*index + 2)
+          (leftTrack, rightTrack) = (2*index + 1, 2*index + 2)
 
 -- Find the largest index base on the value on three elements
 maxInThree :: Ord a => [a] -> Nat -> Nat -> Nat -> Nat
@@ -291,7 +290,7 @@ validateBSTHelper [x] = True
 validateBSTHelper (x1:x2:xs) = (x1 <= x2) && validateBSTHelper(x2:xs)
 
 -- Balanced tree
-testTree3 = 
+testTree3 =
     Node 10
         (Node 5
             (Node 1 Null Null)
@@ -305,6 +304,7 @@ testTree3 =
             (Node 50 Null Null))
 
 {-
+    4.6
     Write an algorithm to find the in-order successor of a given node 
     in a binary search tree. 
     You may assume that each node has a link to its parent.
@@ -312,8 +312,20 @@ testTree3 =
     in-order successor: the sequenced next node
 -}
 
--- findSuccessor :: Ord a => BiTree a -> a
+{-
+    Solution1: using in-order traverse, then output is an in-order array.
+    Assume all node are unique, then we find the next value of the node
 
+    Solution2: Two condition, 
+        the node has no right child: 
+            find the first parent node which satisfy the condition 
+        the node has the right child: 
+            find the most leftest node in the right branch
+-}
 
--- the node is left
--- the node has children
+findSuccessor :: Ord a => BiTree a -> BiTree a
+findSuccessor Null = error "Empty Tree"
+findSuccessor (Node n _ Null) = 
+    error "find the first parent node which satisfy the condition"
+findSuccessor (Node n _ right) =
+    error "find the most leftest node in the right branch"
