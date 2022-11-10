@@ -59,3 +59,35 @@ findAllPaths g possEdges end dict
     | otherwise = findAllPaths g (xs ++ findEdges g e) end (insert e True dict)
     where x:xs = possEdges
           (s,e,w) = x
+
+{-
+    4.7 
+    You are given a list of projects and a list of dependencies 
+    (which is a list of pairs of projects, where the second project 
+    is dependent on the first project). 
+    All of a project's dependencies must be built before the project is. 
+    Find a build order that will allow the projects to be built. 
+    If there is no valid build order, return an error.
+
+    Assume there is no error dependencies such as (a,a)
+    or loop dependencies such as [(a,b), (b,a)]
+-}
+projects = ['a','b','c','d','e','f']
+dependencies = [('a','d'),('f','b'),('b','d'),('f','a'),('d','c')]
+
+buildOver :: [Char] -> [(Char,Char)] -> [Char]
+buildOver [] _ = [] 
+buildOver (x:xs) [] = x: buildOver xs []
+buildOver (x:xs) deps
+    | isValid x deps = x: buildOver xs updatedDeps
+    | otherwise = buildOver (xs++[x]) deps
+    where updatedDeps = [(pre, cur)| (pre, cur) <- deps, pre /= x]
+         
+-- [x*2 | x <- [1..10], x*2 >= 12]  
+-- [(start, end, weight)| (start, end, weight) <- allEdges, start == v ]
+
+isValid :: Char -> [(Char, Char)] -> Bool
+isValid _ [] = True
+isValid pro (x:xs) 
+    | pro == snd x = False
+    | otherwise = isValid pro xs 
