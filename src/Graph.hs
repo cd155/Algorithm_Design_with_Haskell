@@ -75,19 +75,30 @@ findAllPaths g possEdges end dict
 projects = ['a','b','c','d','e','f']
 dependencies = [('a','d'),('f','b'),('b','d'),('f','a'),('d','c')]
 
+-- Giving projects and its dependencies, find a valid path to build
 buildOver :: [Char] -> [(Char,Char)] -> [Char]
-buildOver [] _ = [] 
-buildOver (x:xs) [] = x: buildOver xs []
-buildOver (x:xs) deps
-    | isValid x deps = x: buildOver xs updatedDeps
-    | otherwise = buildOver (xs++[x]) deps
-    where updatedDeps = [(pre, cur)| (pre, cur) <- deps, pre /= x]
-         
--- [x*2 | x <- [1..10], x*2 >= 12]  
--- [(start, end, weight)| (start, end, weight) <- allEdges, start == v ]
+buildOver pros = buildOver' pros pros
 
+{-
+    Giving: original projects, iterated projects, dependencies
+
+    The ori is value to determine whether there is an invalid path
+-}
+buildOver' :: [Char] -> [Char] -> [(Char,Char)] -> [Char]
+buildOver' _ [] _ = []
+buildOver' ori (x:xs) [] = x: buildOver' ori xs []
+buildOver' ori (x:xs) deps
+    | isValid x deps = x: buildOver' xs xs updatedDeps
+    | otherwise =
+        if updatedPros == ori
+            then error "Loop dependencies, some projects cannot be built."
+            else buildOver' ori updatedPros deps
+    where updatedDeps = [(pre, cur)| (pre, cur) <- deps, pre /= x]
+          updatedPros = xs++[x]
+
+-- Giving a project, check whether it can be built
 isValid :: Char -> [(Char, Char)] -> Bool
 isValid _ [] = True
-isValid pro (x:xs) 
+isValid pro (x:xs)
     | pro == snd x = False
-    | otherwise = isValid pro xs 
+    | otherwise = isValid pro xs
