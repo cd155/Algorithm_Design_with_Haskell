@@ -11,15 +11,28 @@ https://github.com/cd155/algorithm-design-with-haskell/blob/0b28d915860446f07bb6
 - merge sort
 https://github.com/cd155/algorithm-design-with-haskell/blob/0b28d915860446f07bb6643388dc9894cc75fcd7/src/Sorting.hs#L74-L97
 
-- Interview Questions
+- Interview Questions - Sorting
   https://github.com/cd155/algorithm-design-with-haskell/blob/0b28d915860446f07bb6643388dc9894cc75fcd7/src/Sorting.hs#L122-L137
 
   https://github.com/cd155/algorithm-design-with-haskell/blob/0b28d915860446f07bb6643388dc9894cc75fcd7/src/Sorting.hs#L139-L161
 
   https://github.com/cd155/algorithm-design-with-haskell/blob/0b28d915860446f07bb6643388dc9894cc75fcd7/src/Sorting.hs#L163-L216
-  
+
+- Heap
+
 ## Searching
 - linear search
 - binary search
 - binary search with no size
 - bit-related structure
+
+## Graph and Tree
+- Academic Term Definition of Tree
+- Definition - Tree
+- Interview Questions - Tree
+- Definition - Graph 
+- Interview Questions - Graph
+
+## LinkedList
+- Definition
+- Interview Questions - LinkedList
