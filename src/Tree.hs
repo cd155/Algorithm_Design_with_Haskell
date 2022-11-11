@@ -348,6 +348,8 @@ findSuccessor (Node n _ right) =
     2. find the index for both sub1 and sub2. In case of one of 
        them are not subtree of ori, return Null
     3. using map the check the most common parent they have
+
+    xs = createPerfTree testTree3
 -}
 findFirstParent :: [Maybe a] -> Nat -> Nat -> Nat
 findFirstParent xs sub1 sub2 
