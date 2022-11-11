@@ -213,4 +213,5 @@ shuffleHelper Valley (x1:x2:xs)
     | x1 > x2 = x2: shuffleHelper Peak (x1:xs)
     | otherwise = x1: shuffleHelper Peak (x2:xs)
 
+-- test case
 pvArray = [5, 3, 1, 2, 3]
