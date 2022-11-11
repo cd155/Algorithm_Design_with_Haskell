@@ -26,10 +26,12 @@ https://github.com/cd155/algorithm-design-with-haskell/blob/0b28d915860446f07bb6
 - binary search with no size
 - bit-related structure
 
-## Graph and Tree
+## Tree
 - Academic Term Definition of Tree
 - Definition - Tree
 - Interview Questions - Tree
+
+## Graph
 - Definition - Graph 
 - Interview Questions - Graph
 
