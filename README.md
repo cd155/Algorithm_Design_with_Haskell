@@ -1,5 +1,5 @@
-# Algorithm Design with Haskell
-Practice for Algorithm Design with Haskell
+# Using Haskell to Cracking the Code Interview
+Haskell Practice for solving real code problems, including Sorting, Searching, Tree, Graph and more.
 
 ## Sorting
 - bubble sort
