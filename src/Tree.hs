@@ -1,12 +1,17 @@
 module Tree where
 
 import Basics (Nat)
+import Data.Map (Map, member, insert, empty)
 
 -- A tree contains zero or more trees
 data Tree a = Null1| Node1 a [Tree a] deriving Show
 
 -- A binary tree contain max two trees
 data BiTree a = Null | Node a (BiTree a) (BiTree a) deriving Show
+
+-- A binary tree contain max two trees, and its parent
+data BiTree' a = 
+    Null2 | Node2 a (BiTree' a) (BiTree' a) (BiTree' a) deriving Show
 
 instance Ord a => Eq (BiTree a) where
   Null == Null = True
@@ -83,8 +88,8 @@ testTree1 =
 testHeap = [10, 5, 20, 3, 7, 30]
 
 -- Append the element to the end of the list
-insert :: a -> [a] -> [a]
-insert x xs = xs ++ [x]
+insert' :: a -> [a] -> [a]
+insert' x xs = xs ++ [x]
 
 -- View the array as a heap structure
 viewAsTree :: [a] -> BiTree a
@@ -97,8 +102,7 @@ viewAsTreeHelper track xs
         Node (xs!!track) (viewAsTreeHelper leftTrack xs) (viewAsTreeHelper rightTrack xs)
     | otherwise = Null
     where size = length xs
-          (leftTrack, rightTrack) =
-            if track == 0 then (1 ,2) else (2*track + 1, 2*track + 2)
+          (leftTrack, rightTrack) = (2*track + 1, 2*track + 2)
 
 -- Given an array, create a Max-Heap 
 buildMaxHeap :: Ord a => [a] -> [a]
@@ -191,26 +195,30 @@ findPath t (Node n left right)
     1. We can create a completed heap by using Breadth-first visit
     2. find whether the destination node exist in the array
     3. we can trace back the path, base on its index
+-}
+createPerfTree :: Ord a => BiTree a -> [Maybe a]
+createPerfTree tree = createPerfTreeHelper' [tree]
 
+{-
     Note: this only working for Complete Tree, a generic version requires
     expand Null to match the highest height. 
     Check listDepthHelper in LinkedList.hs
 -}
-createPerfectTree :: [BiTree a] -> [Maybe a]
-createPerfectTree [] = []
-createPerfectTree [Null] = []
-createPerfectTree (Null: xs) = Nothing: createPerfectTree xs
-createPerfectTree (Node n left right:xs) =
-    Just n: createPerfectTree (xs ++ [left, right])
+createPerfTreeHelper :: [BiTree a] -> [Maybe a]
+createPerfTreeHelper [] = []
+createPerfTreeHelper [Null] = []
+createPerfTreeHelper (Null: xs) = Nothing: createPerfTreeHelper xs
+createPerfTreeHelper (Node n left right:xs) =
+    Just n: createPerfTreeHelper (xs ++ [left, right])
 
--- Fill in a binary tree with Nothing to make it a Perfect Trees
-createPerfectTree' :: Ord a => [BiTree a] -> [Maybe a]
-createPerfectTree' [] = []
-createPerfectTree' [Null] = []
-createPerfectTree' (Null: xs) =
-    if null list then [] else Nothing: createPerfectTree' (xs ++ [Null, Null])
+-- Fill in a binary tree with Nothing to make it a nearly perfect tree
+createPerfTreeHelper' :: Ord a => [BiTree a] -> [Maybe a]
+createPerfTreeHelper' [] = []
+createPerfTreeHelper' [Null] = []
+createPerfTreeHelper' (Null: xs) =
+    if null list then [] else Nothing: createPerfTreeHelper' (xs ++ [Null, Null])
         where list = [x | x <- xs, x /= Null]
-createPerfectTree' (Node n left right:xs) = Just n: createPerfectTree' (xs ++ [left, right])
+createPerfTreeHelper' (Node n left right:xs) = Just n: createPerfTreeHelper' (xs ++ [left, right])
 
 {-
     4.2 Given a sorted (increasing order) array with unique integer elements, 
@@ -325,7 +333,39 @@ testTree3 =
 
 findSuccessor :: Ord a => BiTree a -> BiTree a
 findSuccessor Null = error "Empty Tree"
-findSuccessor (Node n _ Null) = 
+findSuccessor (Node n _ Null) =
     error "find the first parent node which satisfy the condition"
 findSuccessor (Node n _ right) =
     error "find the most leftest node in the right branch"
+
+{-
+    4.8
+    Find the first common parent in a binary tree
+-}
+
+{-
+    1. covert the ori from tree represent to an array represent
+    2. find the index for both sub1 and sub2. In case of one of 
+       them are not subtree of ori, return Null
+    3. using map the check the most common parent they have
+-}
+findFirstParent :: [Maybe a] -> Nat -> Nat -> Nat
+findFirstParent xs sub1 sub2 
+    | (sub1 >= length xs) || (sub2 >= length xs) = 
+        error "Invalid sub trees"
+    | otherwise = findFirstParentHelper sub1 sub2 empty
+
+-- sub1 and sub2 are index of the array of binary tree represent, 
+-- they are represent the root not of two subtree
+findFirstParentHelper :: Nat -> Nat -> Map Nat Bool -> Nat
+findFirstParentHelper sub1 sub2 dict
+    | sub1 == sub2 = sub1
+    | member sub1 dict = sub1
+    | member sub2 dict = sub2
+    | otherwise =
+        findFirstParentHelper (par sub1) (par sub2) updateMap
+    where par x
+            | x == 0 = 0
+            | odd x = (x-1) `div` 2
+            | otherwise = (x-2) `div` 2
+          updateMap = insert sub1 True (insert sub2 True dict)

@@ -1,6 +1,6 @@
 module LinkedList where
 
-import Tree (BiTree(..), testTree2, createPerfectTree')
+import Tree (BiTree(..), testTree2, createPerfTree)
 import Basics (Nat)
 
 -- A sequence of nodes, simple very of graph
@@ -11,7 +11,7 @@ data LinkedList a = Null'| Node' a (LinkedList a) deriving Show
     a linked list of all the nodes at each depth.
 -}
 listDepth :: Ord a => BiTree a -> [[a]]
-listDepth root = divideTree (createPerfectTree' [root])
+listDepth root = divideTree (createPerfTree root)
 
 -- Divide the complete tree base on depth into array of array
 divideTree :: [Maybe a] -> [[a]]
