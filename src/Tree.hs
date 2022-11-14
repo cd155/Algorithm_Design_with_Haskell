@@ -10,7 +10,7 @@ data Tree a = Null1| Node1 a [Tree a] deriving Show
 data BiTree a = Null | Node a (BiTree a) (BiTree a) deriving Show
 
 -- A binary tree contain max two trees, and its parent
-data BiTree' a = 
+data BiTree' a =
     Null2 | Node2 a (BiTree' a) (BiTree' a) (BiTree' a) deriving Show
 
 instance Ord a => Eq (BiTree a) where
@@ -352,8 +352,8 @@ findSuccessor (Node n _ right) =
     xs = createPerfTree testTree3
 -}
 findFirstParent :: [Maybe a] -> Nat -> Nat -> Nat
-findFirstParent xs sub1 sub2 
-    | (sub1 >= length xs) || (sub2 >= length xs) = 
+findFirstParent xs sub1 sub2
+    | (sub1 >= length xs) || (sub2 >= length xs) =
         error "Invalid sub trees"
     | otherwise = findFirstParentHelper sub1 sub2 empty
 
@@ -371,3 +371,62 @@ findFirstParentHelper sub1 sub2 dict
             | odd x = (x-1) `div` 2
             | otherwise = (x-2) `div` 2
           updateMap = insert sub1 True (insert sub2 True dict)
+
+{-
+    4.9
+    A binary search tree was created based on an array
+
+    traversing the array from the left to the right, insert the node 
+    immediately one by one base on the property of BST: for every node, 
+    all left values <= parent value < all right values.
+
+    ------ Example 1
+    [5,4,2] and [5,2,4], will produce two different BSTs. 
+
+    [5,4,2]: parent 5, 4 smaller than 5, put it on the left child of 5 , 
+             2 is smaller 4, put it on the left child of 4
+    Result => [5, 4, Null, 2] 
+
+    [5,2,4]: parent 5, 2 smaller than 5, put it on the left child of 5 , 
+             2 <= 4 < 5 , put it on the right child of 2 
+    Result => [5, 2, Null, Null, 4] 
+    ------
+
+    ------ Example 2
+    [10, 5, 20] and [10, 5, 20], will produce the same BST. 
+
+    [10, 5, 20]: parent 10, 5 smaller than 10, put it on the left child of 10, 
+                 20 is greater than 10, put it on the right child of 10
+    Result => [10, 5, 20] 
+
+    [10, 20, 5]: parent 10, 20 greater than 10, put it on the right child of 10, 
+                 5 is smaller than 10, put it on the left child of 10
+    Result => [10, 5, 20] 
+    ------
+
+    Given a binary search tree with distinct elements, print all 
+    possible arrays that could have led to this tree.
+-}
+
+{-
+    Useful Helper: find the all permutation of a set (can have the same value)
+    test case: findAllPermu [] [1,2,3]
+-}
+findAllPermu :: [[a]] -> [a] -> [[a]]
+findAllPermu accum [] = accum
+findAllPermu [] (y:ys) = findAllPermu [[y]] ys
+findAllPermu xs (y:ys) = findAllPermu (permutateHelper xs y) ys
+
+-- Find all possible ways insert an element with multiple lists
+permutateHelper :: [[a]] -> a -> [[a]]
+permutateHelper [] add = []
+permutateHelper (x:xs) add = permutateHelper xs add ++ permutate x add 0
+
+-- Find all possible ways insert an element into a list
+permutate :: [a] -> a -> Nat -> [[a]]
+permutate xs add pos
+    | pos > length xs = []
+    | otherwise = (pre ++ [add] ++ app): permutate xs add (pos+1)
+        where (pre, app) = splitAt pos xs
+
+-- Find the permutation with the constraint
