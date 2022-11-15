@@ -429,4 +429,28 @@ permutate xs add pos
     | otherwise = (pre ++ [add] ++ app): permutate xs add (pos+1)
         where (pre, app) = splitAt pos xs
 
+-- fix-me findAllPermu' missing insert the first of the `ys` list
+mergeRetainOrder :: Eq a => [a] -> [a] -> [[a]]
+mergeRetainOrder xs ys = findAllPermu' (permutate xs (head ys) 0) ys
+
 -- Find the permutation with the constraint
+findAllPermu' :: Eq a => [[a]] -> [a] -> [[a]]
+findAllPermu' accum [] = accum
+findAllPermu' [] (y:ys) = findAllPermu' [[y]] ys
+findAllPermu' xs [y]= permutateHelper xs y
+findAllPermu' xs [y1, y2]= findAllPermu' (permutateHelper' xs y1 y2) []
+findAllPermu' xs (y1:y2:ys) = findAllPermu' (permutateHelper' xs y1 y2) (y2:ys)
+
+-- similar with permutateHelper with a constraint add 'appear' after 'cons'
+permutateHelper' :: Eq a => [[a]] -> a -> a-> [[a]]
+permutateHelper' [] cond add = []
+permutateHelper' (x:xs) cond add =
+    permutateHelper' xs cond add ++ permutate' x cond add 0
+
+-- similar with permutate with a constraint `add` appear after 'cons'
+permutate' :: Eq a => [a] -> a -> a -> Nat -> [[a]]
+permutate' xs cond add pos
+    | pos > length xs = []
+    | cond `elem` app = permutate' xs cond add (pos+1)
+    | otherwise = (pre ++ [add] ++ app): permutate' xs cond add (pos+1)
+        where (pre, app) = splitAt pos xs
