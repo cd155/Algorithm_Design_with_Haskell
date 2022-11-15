@@ -429,7 +429,16 @@ permutate xs add pos
     | otherwise = (pre ++ [add] ++ app): permutate xs add (pos+1)
         where (pre, app) = splitAt pos xs
 
--- fix-me findAllPermu' missing insert the first of the `ys` list
+-- Produce all possible sequence to construct a balance search tree
+-- Test case leftArr = [5, 2, 4], rightArr = [20, 30]
+bstSequences :: Eq a => BiTree a -> [[a]]
+bstSequences Null = []
+bstSequences (Node n left right) = map (n:) (mergeRetainOrder leftArr rightArr)
+    where leftArr = inOrderTraverse left
+          rightArr = inOrderTraverse right
+
+-- Add the (head ys) in to permutation, 
+-- findAllPermu' start insert elements at the second index
 mergeRetainOrder :: Eq a => [a] -> [a] -> [[a]]
 mergeRetainOrder xs ys = findAllPermu' (permutate xs (head ys) 0) ys
 
