@@ -13,7 +13,7 @@ data BiTree a = Null | Node a (BiTree a) (BiTree a) deriving Show
 data BiTree' a =
     Null2 | Node2 a (BiTree' a) (BiTree' a) (BiTree' a) deriving Show
 
-instance Ord a => Eq (BiTree a) where
+instance Eq a => Eq (BiTree a) where
   Null == Null = True
   Null == Node {} = False
   Node {} == Null = False
@@ -344,12 +344,13 @@ findSuccessor (Node n _ right) =
 -}
 
 {-
-    1. covert the ori from tree represent to an array represent
-    2. find the index for both sub1 and sub2. In case of one of 
-       them are not subtree of ori, return Null
-    3. using map the check the most common parent they have
+    1. covert the root from tree represent to an array represent
+        xs = createPerfTree testTree3
 
-    xs = createPerfTree testTree3
+    2. find the index for both sub1 and sub2. In case of one of 
+       them are not subtree of the root, return Null
+
+    3. using map the check the most common parent they have
 -}
 findFirstParent :: [Maybe a] -> Nat -> Nat -> Nat
 findFirstParent xs sub1 sub2
@@ -358,7 +359,7 @@ findFirstParent xs sub1 sub2
     | otherwise = findFirstParentHelper sub1 sub2 empty
 
 -- sub1 and sub2 are index of the array of binary tree represent, 
--- they are represent the root not of two subtree
+-- they are represent the root of two subtree
 findFirstParentHelper :: Nat -> Nat -> Map Nat Bool -> Nat
 findFirstParentHelper sub1 sub2 dict
     | sub1 == sub2 = sub1
@@ -463,3 +464,21 @@ permutate' xs cond add pos
     | cond `elem` app = permutate' xs cond add (pos+1)
     | otherwise = (pre ++ [add] ++ app): permutate' xs cond add (pos+1)
         where (pre, app) = splitAt pos xs
+
+{-
+    4.10
+    Tl and T2 are two very large binary trees, with Tl much bigger than T2. 
+    Create an algorithm to determine if T2 is a subtree of Tl.
+
+    A tree T2 is a subtree of Tl if there exists a node n in Tl such that 
+    the subtree of n is identical to T2. That is, if you cut off the tree 
+    at node n, the two trees would be identical.
+-}
+
+{-
+    Solution1: Using a modified in-order/pre-order/post-order traversal to 
+               compare two strings. Using Nothing to represent a Null node.
+
+    Solution2: Brutal Force the larger tree to find whether two tree are 
+               identical.
+-}
