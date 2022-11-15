@@ -78,6 +78,9 @@ testTree1 =
     The (binary) heap data structure 
     is an array object that we can view as a nearly complete binary tree 
 
+    The heap is completely filled on all levels except possibly the lowest, 
+    which is filled from the left up to a point.
+
     Min Heaps: each node is smaller than its children
     Max Heaps: each node is greater than its children
 
@@ -481,4 +484,32 @@ permutate' xs cond add pos
 
     Solution2: Brutal Force the larger tree to find whether two tree are 
                identical.
+-}
+
+{-
+    4.11
+    You are implementing a binary tree class from scratch which, in addition 
+    to insert, find, and delete, has a method getRandomNode() which returns 
+    a random node from the tree. All nodes should be equally likely to be 
+    chosen. Design and implement an algorithm for getRandomNode, and explain 
+    how you would implement the rest of the methods.
+-}
+
+{-
+    Convert the binary tree to a Heap structure. The using Nothing to fill the 
+    Null Node. We can use an array to present the Heap structure.
+
+    Insert an individual node: replace the first Nothing to new Node's value
+
+    Insert an subtree: Covert the subtree into Heap structure, and view it as 
+                       an array. Check the segment of Nothing in the original 
+                       array to see whether the subtree(string) can fit in. 
+                       If not, append the subtree(string) to the original array.
+
+    Find n: find all nodes that its value equal to n
+
+    Other find related function: isNodeExistIn, findNodeParent, findImmediateRel
+
+    getRandomNode: Random a Nat between 0 and (length of Array). The result should 
+                   exclude any index which has Nothing 
 -}
