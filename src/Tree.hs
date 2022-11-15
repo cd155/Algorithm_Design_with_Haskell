@@ -264,7 +264,7 @@ checkBalance root = if diff > 2 then False else True
 
 -- Create a collection that has all heights of leaves
 buildPool :: BiTree a -> Nat -> [Nat]
-buildPool Null depth = []
+buildPool Null _ = []
 buildPool (Node n Null Null) depth = [depth]
 buildPool (Node n left Null) depth = depth: buildPool left (depth+1)
 buildPool (Node n Null right) depth = depth: buildPool right (depth+1)
