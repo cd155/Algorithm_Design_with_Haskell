@@ -496,20 +496,79 @@ permutate' xs cond add pos
 -}
 
 {-
-    Convert the binary tree to a Heap structure. The using Nothing to fill the 
-    Null Node. We can use an array to present the Heap structure.
+    Convert the binary tree to a Heap structure. The using Nothing to fill 
+    the Null Node. We can use an array to present the Heap structure.
 
     Insert an individual node: replace the first Nothing to new Node's value
 
     Insert an subtree: Covert the subtree into Heap structure, and view it as 
                        an array. Check the segment of Nothing in the original 
                        array to see whether the subtree(string) can fit in. 
-                       If not, append the subtree(string) to the original array.
+                       If not, append the subtree(string) to the original 
+                       array.
 
     Find n: find all nodes that its value equal to n
 
-    Other find related function: isNodeExistIn, findNodeParent, findImmediateRel
+    Other find related function: isNodeExistIn, findNodeParent, f
+                                 indImmediateRel
 
-    getRandomNode: Random a Nat between 0 and (length of Array). The result should 
-                   exclude any index which has Nothing 
+    getRandomNode: Random a Nat between 0 and (length of Array). The result 
+                   should exclude any index which has Nothing 
 -}
+
+{-
+    4.12
+    You are given a binary tree in which each node contains an integer value 
+    (the weight, positive or negative). Design an algorithm to count the 
+    number of paths (complete or partial) that the weight equal to a given 
+    value. The path does not need to start or end at the root or a leaf, 
+    but it must go downwards.
+-}
+
+
+{-
+    Instead of iterate node from root to leaf, we can try iterate from left
+    to the root. Evert leaf represent a valid unique path. 
+    
+    In order to do it, we have to convert the binary tree into
+    a Heap, and use an array to represent the Heap. We will fill in Null 
+    node to maintain the heap structure.
+-}
+
+-- find the weight of path (complete or partial) equal to a value
+-- iterate path, the original path, accumulate weight, weight, count
+countPathEqualTo :: ([Nat], [Nat]) -> (Nat, Nat) -> Nat -> Nat
+countPathEqualTo ([],_) _ count = count
+countPathEqualTo (_,[]) _ _ = 0
+countPathEqualTo (x:xs, ys) (accum, weight) count
+    | (accum + x) < weight =
+        countPathEqualTo (xs, ys) (accum+x,weight) count
+    | (accum + x) == weight =
+        countPathEqualTo (drop 1 ys, drop 1 ys) (0,weight) count+1
+    | otherwise = countPathEqualTo (drop 1 ys, drop 1 ys) (0,weight) count
+
+-- findAllPaths :: [Nat] -> [[Nat]]
+
+-- where par x
+--         | x == 0 = 0
+--         | odd x = (x-1) `div` 2
+--         | otherwise = (x-2) `div` 2
+
+-- binary tree, map, track, accumulate
+findAllPathsHelper :: [Maybe Nat] -> [Nat] -> Nat -> [[Maybe Nat]]-> [[Maybe Nat]]
+findAllPathsHelper [] _ _ accum = accum
+findAllPathsHelper xs map track accum
+    | track `elem` map = []
+    | track > (length xs - 1) = error "Wrong initial index."
+    | track == (length xs - 1) =
+        findAllPathsHelper xs (par track: map) (par track) ([xs!!track]: accum)
+    | track == 0 =
+        findAllPathsHelper updateTree map (length updateTree) ((y++[head xs]): ys)
+    | otherwise = 
+        findAllPathsHelper xs map (par track) ((y++[xs!!track]): ys)
+    where par x
+            | x == 0 = 0
+            | odd x = (x-1) `div` 2
+            | otherwise = (x-2) `div` 2
+          y:ys = accum
+          updateTree = drop 1 xs
