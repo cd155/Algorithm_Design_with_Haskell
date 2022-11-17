@@ -194,34 +194,34 @@ findPath t (Node n left right)
         then [] else n: findPath t left ++ findPath t right
 
 {-
-    Breadth-first way to find the path in a completed tree
+    Breadth-first way to find the path in a Heap structure
     1. We can create a completed heap by using Breadth-first visit
     2. find whether the destination node exist in the array
     3. we can trace back the path, base on its index
 -}
-createPerfTree :: Ord a => BiTree a -> [Maybe a]
-createPerfTree tree = createPerfTreeHelper' [tree]
+createHeap :: Ord a => BiTree a -> [Maybe a]
+createHeap tree = createHeapHelper' [tree]
 
 {-
     Note: this only working for Complete Tree, a generic version requires
     expand Null to match the highest height. 
     Check listDepthHelper in LinkedList.hs
 -}
-createPerfTreeHelper :: [BiTree a] -> [Maybe a]
-createPerfTreeHelper [] = []
-createPerfTreeHelper [Null] = []
-createPerfTreeHelper (Null: xs) = Nothing: createPerfTreeHelper xs
-createPerfTreeHelper (Node n left right:xs) =
-    Just n: createPerfTreeHelper (xs ++ [left, right])
+createHeapHelper :: [BiTree a] -> [Maybe a]
+createHeapHelper [] = []
+createHeapHelper [Null] = []
+createHeapHelper (Null: xs) = Nothing: createHeapHelper xs
+createHeapHelper (Node n left right:xs) =
+    Just n: createHeapHelper (xs ++ [left, right])
 
 -- Fill in a binary tree with Nothing to make it a nearly perfect tree
-createPerfTreeHelper' :: Ord a => [BiTree a] -> [Maybe a]
-createPerfTreeHelper' [] = []
-createPerfTreeHelper' [Null] = []
-createPerfTreeHelper' (Null: xs) =
-    if null list then [] else Nothing: createPerfTreeHelper' (xs ++ [Null, Null])
+createHeapHelper' :: Ord a => [BiTree a] -> [Maybe a]
+createHeapHelper' [] = []
+createHeapHelper' [Null] = []
+createHeapHelper' (Null: xs) =
+    if null list then [] else Nothing: createHeapHelper' (xs ++ [Null, Null])
         where list = [x | x <- xs, x /= Null]
-createPerfTreeHelper' (Node n left right:xs) = Just n: createPerfTreeHelper' (xs ++ [left, right])
+createHeapHelper' (Node n left right:xs) = Just n: createHeapHelper' (xs ++ [left, right])
 
 {-
     4.2 Given a sorted (increasing order) array with unique integer elements, 
@@ -348,7 +348,7 @@ findSuccessor (Node n _ right) =
 
 {-
     1. covert the root from tree represent to an array represent
-        xs = createPerfTree testTree3
+        xs = createHeap testTree3
 
     2. find the index for both sub1 and sub2. In case of one of 
        them are not subtree of the root, return Null
@@ -535,8 +535,16 @@ permutate' xs cond add pos
     node to maintain the heap structure.
 -}
 
--- find the weight of path (complete or partial) equal to a value
--- iterate path, the original path, accumulate weight, weight, count
+
+{-
+    Find the weight of path (complete or partial) equal to a value
+    
+    x:xs, iterate path
+    ys: the original path
+    accum: accumulate weight
+    weight: target weight
+    count: accumulate result
+-}
 countPathEqualTo :: ([Nat], [Nat]) -> (Nat, Nat) -> Nat -> Nat
 countPathEqualTo ([],_) _ count = count
 countPathEqualTo (_,[]) _ _ = 0
@@ -549,12 +557,14 @@ countPathEqualTo (x:xs, ys) (accum, weight) count
 
 -- findAllPaths :: [Nat] -> [[Nat]]
 
--- where par x
---         | x == 0 = 0
---         | odd x = (x-1) `div` 2
---         | otherwise = (x-2) `div` 2
+{-
+    Giving a binary tree in an array represent, find its all unique paths
 
--- binary tree, map, track, accumulate
+    xs: the binary tree
+    map: dictionary
+    track: the index
+    accum: the accumulate result
+-}
 findAllPathsHelper :: [Maybe Nat] -> [Nat] -> Nat -> [[Maybe Nat]]-> [[Maybe Nat]]
 findAllPathsHelper [] _ _ accum = accum
 findAllPathsHelper xs map track accum
