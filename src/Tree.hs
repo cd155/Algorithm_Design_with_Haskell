@@ -2,6 +2,7 @@ module Tree where
 
 import Basics (Nat)
 import Data.Map (Map, member, insert, empty)
+import Data.Maybe (isNothing, fromJust)
 
 -- A tree contains zero or more trees
 data Tree a = Null1| Node1 a [Tree a] deriving Show
@@ -67,6 +68,7 @@ postOrderTraverse (Node n Null right) = postOrderTraverse right ++ [n]
 postOrderTraverse (Node n left right) =
     postOrderTraverse left ++ postOrderTraverse right ++ [n]
 
+-- Test case for Traverse
 testTree1 =
     Node 10
         (Node 5
@@ -199,7 +201,7 @@ findPath t (Node n left right)
     2. find whether the destination node exist in the array
     3. we can trace back the path, base on its index
 -}
-createHeap :: Ord a => BiTree a -> [Maybe a]
+createHeap :: Eq a => BiTree a -> [Maybe a]
 createHeap tree = createHeapHelper' [tree]
 
 {-
@@ -215,7 +217,7 @@ createHeapHelper (Node n left right:xs) =
     Just n: createHeapHelper (xs ++ [left, right])
 
 -- Fill in a binary tree with Nothing to make it a nearly perfect tree
-createHeapHelper' :: Ord a => [BiTree a] -> [Maybe a]
+createHeapHelper' :: Eq a => [BiTree a] -> [Maybe a]
 createHeapHelper' [] = []
 createHeapHelper' [Null] = []
 createHeapHelper' (Null: xs) =
@@ -271,7 +273,7 @@ buildPool (Node n Null right) depth = depth: buildPool right (depth+1)
 buildPool (Node n left right) depth =
     buildPool left (depth+1) ++ buildPool right (depth+1)
 
--- test case
+-- Unbalanced tree
 testTree2 =
     Node 1
         (Node 7
@@ -301,6 +303,7 @@ validateBSTHelper [x] = True
 validateBSTHelper (x1:x2:xs) = (x1 <= x2) && validateBSTHelper(x2:xs)
 
 -- Balanced tree
+testTree3 :: BiTree Nat
 testTree3 =
     Node 10
         (Node 5
@@ -370,7 +373,8 @@ findFirstParentHelper sub1 sub2 dict
     | member sub2 dict = sub2
     | otherwise =
         findFirstParentHelper (par sub1) (par sub2) updateMap
-    where par x
+    where par x -- example of statements in where cause 
+                -- can be replaced by findParent function
             | x == 0 = 0
             | odd x = (x-1) `div` 2
             | otherwise = (x-2) `div` 2
@@ -523,62 +527,108 @@ permutate' xs cond add pos
     number of paths (complete or partial) that the weight equal to a given 
     value. The path does not need to start or end at the root or a leaf, 
     but it must go downwards.
--}
 
+    Test run: findNumPathEqual testTree4 8
 
-{-
-    Instead of iterate node from root to leaf, we can try iterate from left
-    to the root. Evert leaf represent a valid unique path. 
+    Explain: instead of iterate node from root to leaf, we can try iterate 
+    from leaves to the root. Every leaf represent a valid unique path. 
     
     In order to do it, we have to convert the binary tree into
     a Heap, and use an array to represent the Heap. We will fill in Null 
     node to maintain the heap structure.
 -}
 
+-- Find the number of paths equal to given weight
+findNumPathEqual :: BiTree Nat -> Nat -> Nat
+findNumPathEqual tree weight = countPathEqualToHelper treeArr allPaths weight 0 []
+    where treeArr = createHeap tree
+          allPaths = findAllPaths treeArr [] (length treeArr-1)
+
+{-
+    Loop through all all paths
+
+    tree: binary tree in heap
+    x:xs: list of path, each path consist of indexes
+    weight: target weight
+    count: accumulate counting
+    dict: accumulate dictionary
+-}
+countPathEqualToHelper :: [Maybe Nat] -> [[Nat]] -> Nat -> Nat -> [[Nat]]-> Nat
+countPathEqualToHelper _ [] _ count _ = count
+countPathEqualToHelper tree (x:xs) weight count dict = 
+    countPathEqualToHelper tree xs weight accCount accDict
+    where (accCount, accDict) = countPathEqualTo tree (x,x) ([],weight) count dict
 
 {-
     Find the weight of path (complete or partial) equal to a value
     
-    x:xs, iterate path
-    ys: the original path
-    accum: accumulate weight
-    weight: target weight
-    count: accumulate result
+    tree: binary tree in heap
+    x:xs, iterate path (index)
+    ys: the original path (index)
+    aWeight: accumulate path which can be used to we can calculate its weight
+    tWeight: target weight
+    aCount: accumulate count
+    dict: track whether a duplicate partial path
 -}
-countPathEqualTo :: ([Nat], [Nat]) -> (Nat, Nat) -> Nat -> Nat
-countPathEqualTo ([],_) _ count = count
-countPathEqualTo (_,[]) _ _ = 0
-countPathEqualTo (x:xs, ys) (accum, weight) count
-    | (accum + x) < weight =
-        countPathEqualTo (xs, ys) (accum+x,weight) count
-    | (accum + x) == weight =
-        countPathEqualTo (drop 1 ys, drop 1 ys) (0,weight) count+1
-    | otherwise = countPathEqualTo (drop 1 ys, drop 1 ys) (0,weight) count
+countPathEqualTo :: 
+    [Maybe Nat] -> ([Nat], [Nat]) -> ([Nat], Nat) -> Nat -> [[Nat]]-> (Nat, [[Nat]])
+countPathEqualTo tree ([],_) _ count dict = (count, dict)
+countPathEqualTo tree (_,[]) _ _ dict = (0, dict)
+countPathEqualTo tree (x:xs, ys) (aWeight, tWeight) aCount dict
+    | calWeight tree (x:aWeight) < tWeight =
+        countPathEqualTo tree (xs, ys) (x:aWeight,tWeight) aCount dict
+    | calWeight tree (x:aWeight) == tWeight && (x:aWeight) `notElem` dict =
+        countPathEqualTo tree (drop 1 ys, drop 1 ys) ([],tWeight) (aCount+1) ((x:aWeight):dict)
+    | otherwise = 
+        countPathEqualTo tree (drop 1 ys, drop 1 ys) ([],tWeight) aCount dict
 
--- findAllPaths :: [Nat] -> [[Nat]]
+-- calculate a weight 
+calWeight :: [Maybe Nat] -> [Nat] -> Nat
+calWeight _ [] = 0
+calWeight tree (x:xs)
+    | isNothing (tree!!x) = error "Invalid path"
+    | otherwise = fromJust (tree!!x) + calWeight tree xs
 
 {-
-    Giving a binary tree in an array represent, find its all unique paths
+    Find all unique paths (indexes)
 
-    xs: the binary tree
-    map: dictionary
-    track: the index
-    accum: the accumulate result
+    xs: the binary tree in an array represent
+    dict: dictionary (only use in current leave, not findPathOnLeaf)
+    i: the index
 -}
-findAllPathsHelper :: [Maybe Nat] -> [Nat] -> Nat -> [[Maybe Nat]]-> [[Maybe Nat]]
-findAllPathsHelper [] _ _ accum = accum
-findAllPathsHelper xs map track accum
-    | track `elem` map = []
-    | track > (length xs - 1) = error "Wrong initial index."
-    | track == (length xs - 1) =
-        findAllPathsHelper xs (par track: map) (par track) ([xs!!track]: accum)
-    | track == 0 =
-        findAllPathsHelper updateTree map (length updateTree) ((y++[head xs]): ys)
+findAllPaths :: [Maybe a] -> [Nat] -> Nat -> [[Nat]]
+findAllPaths [] _ _ = []
+findAllPaths xs dict i
+    | i > (length xs - 1) = error "Wrong initial index."
+    | i `elem` dict = []
+    | isNothing (xs !! i) = findAllPaths xs dict (i-1)
     | otherwise = 
-        findAllPathsHelper xs map (par track) ((y++[xs!!track]): ys)
-    where par x
-            | x == 0 = 0
-            | odd x = (x-1) `div` 2
-            | otherwise = (x-2) `div` 2
-          y:ys = accum
-          updateTree = drop 1 xs
+        findPathOnLeaf xs i: findAllPaths xs (findParent i: dict) (i-1)
+
+-- Find the whole path base on the leaf (indexes)
+findPathOnLeaf :: [a] -> Nat -> [Nat]
+findPathOnLeaf tree i
+    | i == 0 = [0]
+    | otherwise =  findPathOnLeaf tree (findParent i) ++ [i]
+
+-- Helper to find the parent of this node
+findParent :: Nat -> Nat
+findParent x
+    | x == 0 = 0
+    | odd x = (x-1) `div` 2
+    | otherwise = (x-2) `div` 2
+
+-- Unbalanced binary tree with numerical value 
+testTree4 :: BiTree Nat
+testTree4 =
+    Node 10
+        (Node 5
+            (Node 3
+                (Node 3 Null Null)
+                (Node (-2) Null Null))
+            (Node 2
+                Null
+                (Node 1 Null Null)))
+        (Node (-3)
+            Null
+            (Node 11 Null Null))
