@@ -34,3 +34,38 @@ fibDataHelper i n fibData
     | i+1 == n = fibData 
     | otherwise = fibDataHelper (i+1) n 
         (fibData ++ [fibData!!i + fibData!!(i+1)])
+
+{-
+    8.1
+    A child is running up a staircase with n steps and can hop either 
+    1 step, 2 steps, or 3 steps at a time. Implement a method to 
+    count how many possible ways the child can run up the stairs.
+
+    test case: findValidSeq 5 [1,2]
+-}
+findValidSeq :: Nat -> [Nat] -> [[Nat]]
+findValidSeq stair steps = findValidSeqHelper stair steps [[]]
+
+{-
+    existSeq works like a stack, once we know the result meet
+    the requirement, we put it as the part of answer, then we 
+    update the stack with the potential sequence for the next run
+-}
+findValidSeqHelper :: Nat -> [Nat] -> [[Nat]] -> [[Nat]]
+findValidSeqHelper stair steps existSeq 
+    | null nextOri = ans
+    | otherwise = ans ++ findValidSeqHelper stair steps nextOri
+    where updateOri = permutateSeq existSeq steps
+          -- find sequences satisfy requirement
+          ans = filter (\x -> sum x == stair) updateOri
+          -- find potential sequences for the next run
+          nextOri = filter (\x -> sum x < stair) updateOri
+
+{-- 
+    Give a list of sequence and potential appending, and create all 
+    possible permutations.
+--} 
+permutateSeq :: [[Nat]] -> [Nat] -> [[Nat]]
+permutateSeq existSeq [] = []
+permutateSeq existSeq (x:xs) = map (++ [x]) existSeq ++ 
+                               permutateSeq existSeq xs
