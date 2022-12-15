@@ -104,7 +104,11 @@ permutateSeq existSeq (x:xs) = map (++ [x]) existSeq ++
 
     Theoretically, it has 2^(c+r) different paths
 
-    test case: allPaths (0,0) (2,2) [(1,1), (1,2)]
+    1. find all valid paths
+       test case: allPaths (0,0) (2,2) [(1,1), (1,2)]
+    
+    2. find only one valid path
+       test case: findOnePath (0,0) (3,3) [(1,1), (2,1), (3,1),(1,2),(1,3)]
 -}
 
 {-
@@ -167,3 +171,20 @@ removeNothing :: [Maybe(Nat, Nat)] -> [Maybe(Nat, Nat)]
 removeNothing xs
     | xs!!(length xs -1) == Nothing = removeNothing $ init xs
     | otherwise = xs
+
+-- 8.2, find only one valid path
+isValidPath :: (Nat, Nat) -> (Nat, Nat) -> [(Nat, Nat)] -> Bool
+isValidPath (x, y) (c, r) constrs
+    | x == c && y == r = True
+    | x > c || y > r = False
+    | (x, y) `elem` constrs = False
+    | otherwise = isValidPath (x+1, y) (c, r) constrs || 
+                  isValidPath (x, y+1) (c, r) constrs 
+
+findOnePath :: (Nat, Nat) -> (Nat, Nat) -> [(Nat, Nat)] -> [(Nat, Nat)]
+findOnePath (x, y) (c, r) constrs
+    | isValidPath (x+1, y) (c, r) constrs = 
+        (x+1, y): findOnePath(x+1, y) (c,r) constrs
+    | isValidPath (x, y+1) (c, r) constrs = 
+        (x, y+1): findOnePath(x, y+1) (c,r) constrs
+    | otherwise = []
