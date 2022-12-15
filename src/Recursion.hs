@@ -104,7 +104,7 @@ permutateSeq existSeq (x:xs) = map (++ [x]) existSeq ++
 
     Theoretically, it has 2^(c+r) different paths
 
-    test case: allPaths (0,0) (3,3) [(1,2), (3,2)]
+    test case: allPaths (0,0) (2,2) [(1,1), (1,2)]
 -}
 
 {-
