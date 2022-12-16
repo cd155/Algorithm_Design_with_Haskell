@@ -117,7 +117,7 @@ permutateSeq existSeq (x:xs) = map (++ [x]) existSeq ++
     (x, y): current position
     (c, r): final position
     constrs: cells are not available (can't include the start cell)
--} 
+-}
 move :: (Nat, Nat) -> (Nat, Nat) -> [(Nat, Nat)]-> [Maybe (Nat, Nat)]
 move (x, y) (c, r) constrs
     | x+1 <= c && y+1 <= r && xCell `notElem` constrs && yCell `notElem` constrs =
@@ -157,13 +157,13 @@ allPathsHelper (Just (x, y):xs) final constrs  =
 
 -- Return the Completed Heap
 allPaths :: (Nat, Nat) -> (Nat, Nat) -> [(Nat, Nat)] -> [Maybe(Nat, Nat)]
-allPaths start end constrs = 
+allPaths start end constrs =
             Just start: removeNothing (allPathsHelper [Just start] end constrs)
 
 -- Return all unique paths index in a Heap
 allPaths' :: (Nat, Nat) -> (Nat, Nat) -> [(Nat, Nat)] -> [[Nat]]
 allPaths' start end constrs = findAllPaths completedHeap [] (length completedHeap-1)
-    where completedHeap = 
+    where completedHeap =
             Just start: removeNothing (allPathsHelper [Just start] end constrs)
 
 -- Remove Nothing on the tail
@@ -178,13 +178,87 @@ isValidPath (x, y) (c, r) constrs
     | x == c && y == r = True
     | x > c || y > r = False
     | (x, y) `elem` constrs = False
-    | otherwise = isValidPath (x+1, y) (c, r) constrs || 
-                  isValidPath (x, y+1) (c, r) constrs 
+    | otherwise = isValidPath (x+1, y) (c, r) constrs ||
+                  isValidPath (x, y+1) (c, r) constrs
 
 findOnePath :: (Nat, Nat) -> (Nat, Nat) -> [(Nat, Nat)] -> [(Nat, Nat)]
 findOnePath (x, y) (c, r) constrs
-    | isValidPath (x+1, y) (c, r) constrs = 
+    | isValidPath (x+1, y) (c, r) constrs =
         (x+1, y): findOnePath(x+1, y) (c,r) constrs
-    | isValidPath (x, y+1) (c, r) constrs = 
+    | isValidPath (x, y+1) (c, r) constrs =
         (x, y+1): findOnePath(x, y+1) (c,r) constrs
     | otherwise = []
+
+{-
+    8.3
+    A magic index in an array A [0 ... n-1] is defined to be an index such 
+    that A[i] = i. Given a sorted array of distinct integers, write a 
+    method to find a magic index, if one exists, in array A.
+
+    For example:
+    |0    |1    |2    |3    |4    |5    |6
+    |-40  |-20  |0    |1    |4    |10   |12
+
+    Solution 1: brutal force
+    Solution 2: binary search 
+-}
+
+findMagicIndex :: [Int] -> Nat -> Int
+findMagicIndex [] _ = error "No magic index in this array."
+findMagicIndex arr preInd
+    | arr !! mid == (preInd + mid) = preInd + mid
+    | arr !! mid > (preInd + mid) = findMagicIndex fstHalf preInd
+    | otherwise = findMagicIndex sndHalf (preInd+mid)
+    where mid = length arr `div` 2
+          (fstHalf, sndHalf) = splitAt mid arr
+
+{-
+    8.3 with a sorted array of non-distinct integers
+    |0    |1    |2    |3    |4    |5    |6    |7    |8    |9    |10
+    |-10  |-5   |2    |2    |2    |3    |4    |7    |9    |12   |13
+-}
+
+{-
+    8.4
+    Write a method to return all subsets of a set.
+
+    input: a = [1,3,4,6,10]
+    output: the power set of a
+
+    test case = powerSetOf [3,3,7,10,1,15]
+-}
+powerSetOf :: [a] -> [[a]]
+powerSetOf xs = map (map (xs!!)) resultInInd
+    where resultInInd = powerSetHelper initalSeq (length xs) 0
+          initalSeq = powerSetOfInd 0 (length xs)
+
+-- Initialize the list of index for pairing
+-- It is better to use index for paring because the index is a unique ID
+powerSetOfInd :: Nat -> Nat -> [[Nat]]
+powerSetOfInd i max
+    | i < max = [i]: powerSetOfInd (i+1) max
+    | otherwise = []
+
+{-
+    Copy the current set, and accumulate with new set
+
+    inp: give list of seq, 
+    len: length of original set, 
+    count: count number (start with 0) indicate when to stop the loop
+-}
+powerSetHelper :: [[Nat]] -> Nat -> Nat -> [[Nat]]
+powerSetHelper inp len count
+    | count < len = inp ++ powerSetHelper newInp len (count+1)
+    | otherwise = []
+    where newInp = newPair inp len
+
+-- Accumulate all new pair in the list
+newPair :: [[Nat]] -> Nat -> [[Nat]]
+newPair [] len = []
+newPair (x:xs) len =
+    newPairHelper x [(last x +1) .. len-1] ++ newPair (xs) len
+
+-- Give a new seq append new possible pairing to it
+newPairHelper :: [Nat] -> [Nat] -> [[Nat]]
+newPairHelper _ [] = []
+newPairHelper a (x:xs) = (a ++ [x]):  newPairHelper a xs
