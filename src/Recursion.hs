@@ -262,3 +262,40 @@ newPair (x:xs) len =
 newPairHelper :: [Nat] -> [Nat] -> [[Nat]]
 newPairHelper _ [] = []
 newPairHelper a (x:xs) = (a ++ [x]):  newPairHelper a xs
+
+{-
+    8.6
+    Towers of Hanoi: 
+    In the classic problem of the Towers of Hanoi, you have 3 towers and 
+    N disks of different sizes which can slide onto any tower. The puzzle 
+    starts with disks sorted in ascending order of size from top to bottom 
+    (i.e., each disk sits on top of an even larger one). 
+    
+    You have the following constraints:
+    1. Only one disk can be moved at a time.
+    2. A disk is moved from the top of one tower to another tower.
+    3. A disk cannot be placed on top of a smaller disk.
+
+    Write a program to move the disks from the first tower to the last 
+    using stacks.
+-}
+type Peg = String
+type Move = (Peg, Peg)
+
+{-
+    inputs:
+    number fo discs
+    three peg name
+
+    output: move sequence
+
+    Rationale:
+    1. move n-1 stack from start peg to a temp peg,
+    2. move start peg to the end peg
+    3. move n-1 stack from temp peg to end peg
+-}
+hanoi :: Integer -> Peg -> Peg -> Peg -> [Move]
+hanoi 0 _ _ _          = []
+hanoi 1 start _ end    = [(start, end)]
+hanoi n start temp end =
+        hanoi (n-1) start end temp ++ [(start, end)] ++ hanoi (n-1) temp start end
