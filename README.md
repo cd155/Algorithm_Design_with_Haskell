@@ -18,11 +18,11 @@ https://github.com/cd155/algorithm-design-with-haskell/blob/0b28d915860446f07bb6
 
 - Heap
   - what this heap
-    - https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L79-L91
+  https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L79-L91
   - view the Heap as an array
-    - https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L99-110
+  https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L99-110
   - build a max heap
-    - https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L112-119 
+  https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L112-119 
 
 - Heap Sort
 https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L155-L169
