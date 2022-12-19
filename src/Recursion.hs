@@ -299,3 +299,46 @@ hanoi 0 _ _ _          = []
 hanoi 1 start _ end    = [(start, end)]
 hanoi n start temp end =
         hanoi (n-1) start end temp ++ [(start, end)] ++ hanoi (n-1) temp start end
+
+{-
+    8.7 and 8.8
+    1. Generate all permutations of a unique string
+
+    2. Generate all permutations of an non-unique string
+
+    test case: (sort $ permutations "abc") == (sort $ genPerm "abc")
+    
+    bottom-up solution p356
+-}
+genPerm :: String -> [String]
+genPerm = genPermHelper [[]]
+
+-- Loop through all possible character
+genPermHelper :: [String] -> String -> [String]
+genPermHelper inp [] = inp
+genPermHelper inp (x:xs) = genPermHelper newInp xs
+    where newInp = appendPerm inp x
+
+-- Accumulate new permutations (not finished)
+appendPerm :: [String] -> Char -> [String]
+appendPerm [] _ = []
+appendPerm (x:xs) c = newPerm ++ appendPerm xs c
+    where -- newPerm = appendPermHelper x c 0 -- with duplicates
+          newPerm = appendPermHelper' x c 0 [] -- without duplicates
+
+-- Insert the character to every index of the input
+appendPermHelper :: String -> Char -> Nat -> [String]
+appendPermHelper str c ind
+    | ind > length str = []
+    | otherwise = (fstHalf ++ [c] ++ sndHalf): appendPermHelper str c (ind+1)
+    where (fstHalf,sndHalf) = splitAt ind str
+
+-- Insert the character to every index of the input with no duplicates
+appendPermHelper' :: String -> Char -> Nat -> [String] -> [String]
+appendPermHelper' str c ind acc
+    | ind > length str = acc
+    | newPerm `elem` acc = appendPermHelper' str c (ind+1) acc
+    | otherwise = appendPermHelper' str c (ind+1) (newPerm:acc)
+    where (fstHalf,sndHalf) = splitAt ind str
+          newPerm = fstHalf ++ [c] ++ sndHalf
+
