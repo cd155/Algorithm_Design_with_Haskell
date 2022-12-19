@@ -311,34 +311,58 @@ hanoi n start temp end =
     bottom-up solution p356
 -}
 genPerm :: String -> [String]
-genPerm = genPermHelper [[]]
+genPerm chars = genPermHelper [[]] listStr
+    where listStr = map (: []) chars
 
--- Loop through all possible character
-genPermHelper :: [String] -> String -> [String]
+-- Loop through all possible characters/strings
+genPermHelper :: [String] -> [String] -> [String]
 genPermHelper inp [] = inp
 genPermHelper inp (x:xs) = genPermHelper newInp xs
-    where newInp = appendPerm inp x
+    where newInp = appendPerm inp x []
 
--- Accumulate new permutations (not finished)
-appendPerm :: [String] -> Char -> [String]
-appendPerm [] _ = []
-appendPerm (x:xs) c = newPerm ++ appendPerm xs c
-    where -- newPerm = appendPermHelper x c 0 -- with duplicates
-          newPerm = appendPermHelper' x c 0 [] -- without duplicates
+-- Accumulate new permutations base on the string (not finished)
+appendPerm :: [String] -> String -> [String] -> [String]
+appendPerm [] _ acc = acc
+appendPerm (x:xs) c acc = appendPerm xs c (acc++newPerm)
+    where -- newPerm = complement acc (appendPermHelper x c 0) -- with duplicates
+          newPerm = complement acc (appendPermHelper' x c 0 []) -- without duplicates
 
--- Insert the character to every index of the input
-appendPermHelper :: String -> Char -> Nat -> [String]
+-- another check for duplicates in appendPerm level, 
+-- this need to work with appendPermHelper'
+complement :: [String] -> [String] -> [String]
+complement _ [] = []
+complement a (x:xs)
+    | x `elem` a = complement a xs
+    | otherwise = x: complement a xs
+
+-- Insert the character/string to every index of the input
+appendPermHelper :: String -> String -> Nat -> [String]
 appendPermHelper str c ind
     | ind > length str = []
-    | otherwise = (fstHalf ++ [c] ++ sndHalf): appendPermHelper str c (ind+1)
+    | otherwise = (fstHalf ++ c ++ sndHalf): appendPermHelper str c (ind+1)
     where (fstHalf,sndHalf) = splitAt ind str
 
--- Insert the character to every index of the input with no duplicates
-appendPermHelper' :: String -> Char -> Nat -> [String] -> [String]
+-- Insert the character/string to every index of the input with no duplicates
+appendPermHelper' :: String -> String -> Nat -> [String] -> [String]
 appendPermHelper' str c ind acc
     | ind > length str = acc
     | newPerm `elem` acc = appendPermHelper' str c (ind+1) acc
     | otherwise = appendPermHelper' str c (ind+1) (newPerm:acc)
     where (fstHalf,sndHalf) = splitAt ind str
-          newPerm = fstHalf ++ [c] ++ sndHalf
+          newPerm = fstHalf ++ c ++ sndHalf
 
+{-
+    8.9
+    Implement an algorithm to print all valid (eg: properly opened and closed) 
+    combinations of n pairs of parentheses.
+
+    test case: genPerm' ["()","()","()"]
+
+    modify the genPerm from 8.7 and 8.8 to make it works for string, and remove
+    duplicates in two different levels.
+-}
+paren :: String
+paren = "()"
+
+genPerm' :: [String] -> [String]
+genPerm' = genPermHelper [[]]
