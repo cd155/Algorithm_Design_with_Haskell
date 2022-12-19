@@ -20,9 +20,9 @@ https://github.com/cd155/algorithm-design-with-haskell/blob/0b28d915860446f07bb6
   - what this heap
   https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L79-L91
   - view the Heap as an array
-  https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L99-110
+  https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L99-L110
   - build a max heap
-  https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L112-119 
+  https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L112-L119 
 
 - Heap Sort
 https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L155-L169
@@ -44,9 +44,9 @@ https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215
   - pre-order traverse
     https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L53-L60
   - post-order traverse
-    https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L62-69
+    https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L62-L69
 - Depth-first and Breadth-first search
-https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L171-180
+https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L171-L180
 - Depth-first search
 https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L182-L196
 - Breadth-first search
