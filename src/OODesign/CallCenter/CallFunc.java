@@ -1,7 +1,7 @@
 package CallCenter;
 import java.util.*;
 
-public class callFunc {
+public class CallFunc {
     public static void dispatchCall(List<Employee> respondents)
     {
 
@@ -12,7 +12,7 @@ public class callFunc {
         List<Employee> potEmp = new ArrayList<Employee>();	
         for (Employee emp: respondents)
         {
-            
+
         }
         return new Employee[0];
     };
