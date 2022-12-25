@@ -67,3 +67,11 @@ static method:
         1. find the first available respondent, sign a call
             or 2. find the first available manager, sign a call
                 or 3. find the first available director, sign a call
+    
+    getFirstResp([respondent]) -> a list of employee
+
+    getFirstManager([respondent]) -> a list of employee
+
+    getFirstDirector([respondent]) -> a list of employee
+
+    check Resp, manage, director, to find the first one
