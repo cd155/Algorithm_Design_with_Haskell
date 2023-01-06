@@ -39,10 +39,10 @@ package CallCenter;
 public class Employee
 {
     private String levelType;
-    private Boolean isAvailable;
-    private Employee supervisor;
-    private String callNumber;
-
+    
+    public Employee supervisor;
+    public String callNumber;
+    public Boolean isAvailable;
     public String name;
     
     public Employee()
