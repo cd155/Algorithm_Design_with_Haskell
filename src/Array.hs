@@ -1,4 +1,5 @@
 module Array where
+import Data.Map (Map, insert, member, adjust, empty)
 
 {-
     1.1
@@ -37,3 +38,18 @@ isUniqBFHelper c (x:xs) = (c /= x) && isUniqBFHelper c xs
 
     final: r1 && r2
 -}
+
+{-
+    1.2
+    Given two strings, write a method to decide if two string have 
+    the set with the other.
+-}
+
+isPerm :: String -> String -> Bool
+isPerm xs ys = convToDict xs empty == convToDict ys empty
+
+convToDict :: String -> Map Char Int -> Map Char Int
+convToDict [] dict = dict
+convToDict (x:xs) dict
+    | x `member` dict = convToDict xs (adjust (1+) x dict)
+    | otherwise = convToDict xs (insert x 1 dict)
