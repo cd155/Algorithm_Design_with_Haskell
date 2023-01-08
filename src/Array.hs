@@ -100,3 +100,33 @@ isPermPalin xs
     | otherwise = False
     where values = elems (convToDict xs empty)
           validValues = filter odd values
+
+{-
+    1.5
+    There are three types of edits that can be performed on 
+    strings: insert a character, remove a character, or replace 
+    a character. Given two strings, write a function to check if 
+    they are one edit (or zero edits) away.
+
+    Test Case:
+        isOneEditAway "pale" "bale"  -> True
+        isOneEditAway "pale" "bake"  -> False
+        isOneEditAway "pales" "pake" -> False
+        isOneEditAway "pales" "pale" -> True
+        isOneEditAway "pale" "ple"   -> True
+-}
+isOneEditAway :: String -> String -> Bool
+isOneEditAway xs ys 
+    | any (\x -> x>1 || x<(-1)) ysValues = False
+    | length oneEdits > 2 = False
+    | sum ysValues == 0 || sum ysValues == 1 || sum ysValues == -1 = True
+    | otherwise = False
+    where ysValues = elems $ updateYsDict xs (convToDict ys empty)
+          oneEdits = filter (\x -> x==1 || x==(-1)) ysValues
+
+-- update ysDict base on xs
+updateYsDict :: String -> Map Char Integer -> Map Char Integer
+updateYsDict [] ysDict = ysDict 
+updateYsDict (x:xs) ysDict 
+    | x `member` ysDict = updateYsDict xs (adjust (1-) x ysDict)
+    | otherwise = updateYsDict xs (insert x (-1) ysDict)
