@@ -152,4 +152,21 @@ compreStrHelper [] holder = head holder: show (length holder)
 compreStrHelper (x:xs) holder
     | null holder = compreStrHelper xs [x]
     | head holder == x = compreStrHelper xs (x:holder)
-    | otherwise = head holder: show (length holder) ++ compreStrHelper xs [x]
+    | otherwise = 
+        head holder: show (length holder) ++ compreStrHelper xs [x]
+
+{-
+    1.9
+    Assume you have a method isSubstring which checks if one 
+    word is a substring of another. Given two strings, sl and 
+    s2, write code to check if s2 is a rotation of sl using 
+    only one call to isSubstring (e.g.,"waterbottle" is a 
+    rotation of"erbottlewat").
+
+    s1 = xy = waterbottle
+    x = wat
+    y = erbottle
+    s2 = xy = erbottlewat
+
+    what about xyxy?
+-}
