@@ -1,5 +1,5 @@
 module Array where
-import Data.Map (Map, insert, member, adjust, empty)
+import Data.Map (Map, insert, member, adjust, empty, elems)
 import Data.Char (ord)
 
 {-
@@ -65,7 +65,7 @@ isPerm' xs ys = fillAccii xs acciiArr == fillAccii ys acciiArr
 
 fillAccii :: String -> [Integer] -> [Integer]
 fillAccii [] arr = arr
-fillAccii (x:xs) arr = 
+fillAccii (x:xs) arr =
     fillAccii xs (init firstHalf ++ [updated] ++ secondHalf)
     where (firstHalf, secondHalf) = splitAt (ord x) arr
           updated = (arr !! (ord x - 1)) + 1
@@ -88,3 +88,15 @@ repSpaceHelper (x:xs) isSpaPre
     | x == ' ' && isSpaPre = repSpaceHelper xs isSpaPre
     | otherwise = x:repSpaceHelper xs False
 
+{-
+    1.4
+    Given a string, write a function to check if it is a 
+    permutation of a palin­drome.
+-}
+-- Lower case and Upper case are different
+isPermPalin :: String -> Bool
+isPermPalin xs
+    | length validValues == 0 || length validValues == 1 = True
+    | otherwise = False
+    where values = elems (convToDict xs empty)
+          validValues = filter odd values
