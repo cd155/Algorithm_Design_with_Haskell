@@ -1,6 +1,6 @@
 module Array where
 import Data.Map (Map, insert, member, adjust, empty, elems)
-import Data.Char (ord)
+import Data.Char (ord, intToDigit)
 
 {-
     1.1
@@ -116,7 +116,7 @@ isPermPalin xs
         isOneEditAway "pale" "ple"   -> True
 -}
 isOneEditAway :: String -> String -> Bool
-isOneEditAway xs ys 
+isOneEditAway xs ys
     | any (\x -> x>1 || x<(-1)) ysValues = False
     | length oneEdits > 2 = False
     | sum ysValues == 0 || sum ysValues == 1 || sum ysValues == -1 = True
@@ -126,7 +126,30 @@ isOneEditAway xs ys
 
 -- update ysDict base on xs
 updateYsDict :: String -> Map Char Integer -> Map Char Integer
-updateYsDict [] ysDict = ysDict 
-updateYsDict (x:xs) ysDict 
+updateYsDict [] ysDict = ysDict
+updateYsDict (x:xs) ysDict
     | x `member` ysDict = updateYsDict xs (adjust (1-) x ysDict)
     | otherwise = updateYsDict xs (insert x (-1) ysDict)
+
+{-
+    1.6
+    Implement a method to perform basic string compression 
+    using the counts of repeated characters. For example, 
+    the string aabcccccaaa would become a2blc5a3. If the
+    "compressed" string would not become smaller than the 
+    original string, your method should return the original 
+    string. You can assume the string has only uppercase and 
+    lowercase letters (a - z).
+
+    Test Case: 
+        compreString "aabcccccaaa" -> "a2b1c5a3"
+-}
+compreString :: String -> String
+compreString xs = compreStrHelper xs ""
+
+compreStrHelper :: String -> String -> String
+compreStrHelper [] holder = head holder: show (length holder)
+compreStrHelper (x:xs) holder
+    | null holder = compreStrHelper xs [x]
+    | head holder == x = compreStrHelper xs (x:holder)
+    | otherwise = head holder: show (length holder) ++ compreStrHelper xs [x]
