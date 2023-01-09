@@ -1,6 +1,6 @@
 module Array where
 import Data.Map (Map, insert, member, adjust, empty, elems)
-import Data.Char (ord, intToDigit)
+import Data.Char (ord)
 
 {-
     1.1
