@@ -36,3 +36,6 @@ smArrX = [1, 4, 10, 100, 1000]
 
 -- ADT (abstract data type) for binary tree
 data BiTree a = Null | Node a (BiTree a) (BiTree a) deriving Show
+
+-- ADT (abstract data type) for LinkedList
+data LinkedList a = Null'| Node' a (LinkedList a) deriving Show
