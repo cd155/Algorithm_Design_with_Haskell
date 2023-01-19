@@ -353,16 +353,17 @@ appendPermHelper' str c ind acc
 
 {-
     8.9
-    Implement an algorithm to print all valid (eg: properly opened and closed) 
-    combinations of n pairs of parentheses.
+    Implement an algorithm to print all valid (eg: properly opened and 
+    closed) combinations of n pairs of parentheses.
 
-    test case: genPerm' ["()","()","()"]
+    test case: genPerm' [paren,paren,paren]
 
-    modify the genPerm from 8.7 and 8.8 to make it works for string, and remove
-    duplicates in two different levels.
+    modify the genPerm from 8.7 and 8.8 to make it works for string, 
+    and remove duplicates in two different levels.
 -}
 paren :: String
 paren = "()"
 
+-- generate all possible valid parentheses
 genPerm' :: [String] -> [String]
 genPerm' = genPermHelper [[]]
