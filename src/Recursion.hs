@@ -2,6 +2,7 @@ module Recursion where
 
 import Basics (Nat)
 import Tree (findAllPaths)
+import qualified Data.Vector as V
 
 {-
     Recursion: the program call itself
@@ -336,11 +337,11 @@ complement a (x:xs)
     | otherwise = x: complement a xs
 
 -- Insert the character/string to every index of the input
-appendPermHelper :: String -> String -> Nat -> [String]
-appendPermHelper str c ind
-    | ind > length str = []
-    | otherwise = (fstHalf ++ c ++ sndHalf): appendPermHelper str c (ind+1)
-    where (fstHalf,sndHalf) = splitAt ind str
+-- appendPermHelper :: String -> String -> Nat -> [String]
+-- appendPermHelper str c ind
+--     | ind > length str = []
+--     | otherwise = (fstHalf ++ c ++ sndHalf): appendPermHelper str c (ind+1)
+--     where (fstHalf,sndHalf) = splitAt ind str
 
 -- Insert the character/string to every index of the input with no duplicates
 appendPermHelper' :: String -> String -> Nat -> [String] -> [String]
@@ -364,6 +365,109 @@ appendPermHelper' str c ind acc
 paren :: String
 paren = "()"
 
--- generate all possible valid parentheses
+-- Generate all possible valid parentheses
 genPerm' :: [String] -> [String]
 genPerm' = genPermHelper [[]]
+
+{-
+    8.10
+    Implement the "paint fill" function that one might see on many image 
+    editing programs. That is, given a screen (represented by a 
+    two-dimensional array of colors), a point, and a new color, fill in 
+    the surrounding area until the color changes from the original color.
+-}
+
+data Color = Red | Yellow | Blue deriving Show
+
+instance Eq Color where
+    Red == Red = True
+    Red == Yellow = False
+    Red == Blue = False
+    Yellow == Yellow = True
+    Yellow == Blue = True
+    Yellow == Red = False
+    Blue == Blue = True
+    Blue == Yellow = True
+    Blue == Red = True
+
+data Direction = Up | Down | PLeft | PRight
+
+type Image = V.Vector (V.Vector Color)
+
+image :: Image
+image = V.fromList
+    [
+        V.fromList [Red,    Red,    Red],
+        V.fromList [Red,    Yellow, Red],
+        V.fromList [Yellow, Yellow, Blue]
+    ]
+
+-- Paint a color in one location
+paint :: Image -> (Int, Int) -> Color -> Image
+paint vs (i, j) c = 
+    fstHVects V.++ V.fromList[newPaintRow] V.++ V.drop 1 secHVects
+    where 
+        (fstHVects, secHVects) = V.splitAt i vs
+        (fstHPaintRow, secHPaintRow) = V.splitAt j (vs V.! i)
+        newPaintRow = 
+            fstHPaintRow V.++ V.fromList[c] V.++ V.drop 1 secHPaintRow
+
+-- Find all locations which need to paint
+findArea :: Image -> (Int, Int) -> [(Int, Int)]
+findArea img (i,j) = uniq (
+    findAreaOnDir img (i,j) boundC Up ++ 
+    findAreaOnDir img (i,j) boundC Down ++ 
+    findAreaOnDir img (i,j) boundC PLeft ++ 
+    findAreaOnDir img (i,j) boundC PRight) []
+    where boundC = img V.! i V.! j
+
+uniq :: [(Int, Int)] -> [(Int, Int)]-> [(Int, Int)]
+uniq [] buf = buf
+uniq (x:xs) buf
+    | x `elem` buf = uniq xs buf
+    | otherwise = uniq xs (x:buf)
+
+findAreaOnDir :: Image -> (Int, Int) -> Color -> Direction -> [(Int, Int)]
+findAreaOnDir img (i,j) c Up
+    | isInBound img (i,j-1) && selectC == c = 
+        (i,j-1): findAreaOnDir img (i,j-1) c PLeft
+    | isInBound img (i-1,j) && selectC == c = 
+        (i-1,j): findAreaOnDir img (i-1,j) c Up
+    | isInBound img (i,j+1) && selectC == c = 
+        (i,j+1): findAreaOnDir img (i,j+1) c PRight
+    | otherwise = []
+    where selectC = img V.! i V.! j
+findAreaOnDir img (i,j) c Down
+    | isInBound img (i,j-1) && selectC == c = 
+        (i,j-1): findAreaOnDir img (i,j-1) c PLeft
+    | isInBound img (i+1, j) && selectC == c = 
+        (i+1,j): findAreaOnDir img (i+1,j) c Down
+    | isInBound img (i,j+1) && selectC == c = 
+        (i,j+1): findAreaOnDir img (i,j+1) c PRight
+    | otherwise = []
+    where selectC = img V.! i V.! j
+findAreaOnDir img (i,j) c PLeft
+    | isInBound img (i-1, j) && selectC == c = 
+        (i-1,j): findAreaOnDir img (i-1,j) c Up
+    | isInBound img (i,j-1) && selectC == c = 
+        (i,j-1): findAreaOnDir img (i,j-1) c PLeft
+    | isInBound img (i+1,j) && selectC == c = 
+        (i+1,j): findAreaOnDir img (i+1,j) c Down
+    | otherwise = []
+    where selectC = img V.! i V.! j
+findAreaOnDir img (i,j) c PRight
+    | isInBound img (i-1,j) && selectC == c = 
+        (i-1,j): findAreaOnDir img (i-1,j) c Up
+    | isInBound img (i,j+1) && selectC == c = 
+        (i,j+1): findAreaOnDir img (i,j+1) c PRight
+    | isInBound img (i+1,j) && selectC == c = 
+        (i+1,j): findAreaOnDir img (i+1,j) c Down
+    | otherwise = []
+    where selectC = img V.! i V.! j
+
+isInBound :: Image -> (Int, Int) -> Bool
+isInBound img (i,j) 
+    | (0 <= i && i < xBound) && (0 <= j && j < yBound) = True
+    | otherwise = False
+    where xBound = length img
+          yBound = length $ img V.! 0
