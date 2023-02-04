@@ -384,11 +384,11 @@ instance Eq Color where
     Red == Yellow = False
     Red == Blue = False
     Yellow == Yellow = True
-    Yellow == Blue = True
+    Yellow == Blue = False
     Yellow == Red = False
     Blue == Blue = True
-    Blue == Yellow = True
-    Blue == Red = True
+    Blue == Yellow = False
+    Blue == Red = False
 
 data Direction = Up | Down | PLeft | PRight
 
@@ -400,6 +400,13 @@ image = V.fromList
         V.fromList [Red,    Red,    Red],
         V.fromList [Red,    Yellow, Red],
         V.fromList [Yellow, Yellow, Blue]
+    ]
+
+image1 :: Image
+image1 = V.fromList
+    [
+        V.fromList [Red, Red],
+        V.fromList [Red, Yellow]
     ]
 
 -- Paint a color in one location
@@ -415,6 +422,7 @@ paint vs (i, j) c =
 -- Find all locations which need to paint
 findArea :: Image -> (Int, Int) -> [(Int, Int)]
 findArea img (i,j) = uniq (
+    (i,j):
     findAreaOnDir img (i,j) boundC Up ++ 
     findAreaOnDir img (i,j) boundC Down ++ 
     findAreaOnDir img (i,j) boundC PLeft ++ 
@@ -429,40 +437,40 @@ uniq (x:xs) buf
 
 findAreaOnDir :: Image -> (Int, Int) -> Color -> Direction -> [(Int, Int)]
 findAreaOnDir img (i,j) c Up
-    | isInBound img (i,j-1) && selectC == c = 
+    | isInBoundAndSameColor img (i,j-1) c =
         (i,j-1): findAreaOnDir img (i,j-1) c PLeft
-    | isInBound img (i-1,j) && selectC == c = 
+    | isInBoundAndSameColor img (i-1,j) c =
         (i-1,j): findAreaOnDir img (i-1,j) c Up
-    | isInBound img (i,j+1) && selectC == c = 
+    | isInBoundAndSameColor img (i,j+1) c = 
         (i,j+1): findAreaOnDir img (i,j+1) c PRight
     | otherwise = []
-    where selectC = img V.! i V.! j
 findAreaOnDir img (i,j) c Down
-    | isInBound img (i,j-1) && selectC == c = 
+    | isInBoundAndSameColor img (i,j-1) c = 
         (i,j-1): findAreaOnDir img (i,j-1) c PLeft
-    | isInBound img (i+1, j) && selectC == c = 
+    | isInBoundAndSameColor img (i+1,j) c =
         (i+1,j): findAreaOnDir img (i+1,j) c Down
-    | isInBound img (i,j+1) && selectC == c = 
+    | isInBoundAndSameColor img (i,j+1) c = 
         (i,j+1): findAreaOnDir img (i,j+1) c PRight
     | otherwise = []
-    where selectC = img V.! i V.! j
 findAreaOnDir img (i,j) c PLeft
-    | isInBound img (i-1, j) && selectC == c = 
+    | isInBoundAndSameColor img (i-1,j) c = 
         (i-1,j): findAreaOnDir img (i-1,j) c Up
-    | isInBound img (i,j-1) && selectC == c = 
+    | isInBoundAndSameColor img (i,j-1) c = 
         (i,j-1): findAreaOnDir img (i,j-1) c PLeft
-    | isInBound img (i+1,j) && selectC == c = 
+    | isInBoundAndSameColor img (i+1,j) c = 
         (i+1,j): findAreaOnDir img (i+1,j) c Down
     | otherwise = []
-    where selectC = img V.! i V.! j
 findAreaOnDir img (i,j) c PRight
-    | isInBound img (i-1,j) && selectC == c = 
+    | isInBoundAndSameColor img (i-1,j) c = 
         (i-1,j): findAreaOnDir img (i-1,j) c Up
-    | isInBound img (i,j+1) && selectC == c = 
+    | isInBoundAndSameColor img (i,j+1) c = 
         (i,j+1): findAreaOnDir img (i,j+1) c PRight
-    | isInBound img (i+1,j) && selectC == c = 
+    | isInBoundAndSameColor img (i+1,j) c = 
         (i+1,j): findAreaOnDir img (i+1,j) c Down
     | otherwise = []
+
+isInBoundAndSameColor :: Image -> (Int, Int) -> Color -> Bool
+isInBoundAndSameColor img (i,j) c = isInBound img (i,j) && selectC == c
     where selectC = img V.! i V.! j
 
 isInBound :: Image -> (Int, Int) -> Bool
