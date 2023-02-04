@@ -392,7 +392,6 @@ genPerm' = genPermHelper [[]]
         [Yellow,Yellow,Blue]
     ]
 -}
-
 data Color = Red | Yellow | Blue deriving Show
 
 instance Eq Color where
@@ -410,6 +409,7 @@ data Direction = Up | Down | PLeft | PRight
 
 type Image = V.Vector (V.Vector Color)
 
+-- test case
 image :: Image
 image = V.fromList
     [
@@ -418,6 +418,7 @@ image = V.fromList
         V.fromList [Yellow, Yellow, Blue]
     ]
 
+-- fill up a color 
 fillUpColor :: Image -> (Int, Int) -> Color -> Image
 fillUpColor img (i,j) c = foldl (\acc x -> paint acc x c ) img pList
     where pList = findArea img (i,j)
@@ -442,12 +443,14 @@ findArea img (i,j) = uniq (
     findAreaOnDir img (i,j) boundC PRight) []
     where boundC = img V.! i V.! j
 
+-- remove duplicates
 uniq :: [(Int, Int)] -> [(Int, Int)]-> [(Int, Int)]
 uniq [] buf = buf
 uniq (x:xs) buf
     | x `elem` buf = uniq xs buf
     | otherwise = uniq xs (x:buf)
 
+-- find potential position by direction
 findAreaOnDir :: Image -> (Int, Int) -> Color -> Direction -> [(Int, Int)]
 findAreaOnDir img (i,j) c Up
     | isInBoundAndSameColor img (i,j-1) c =
@@ -482,10 +485,12 @@ findAreaOnDir img (i,j) c PRight
         (i+1,j): findAreaOnDir img (i+1,j) c Down
     | otherwise = []
 
+-- condition determine potential fill up position
 isInBoundAndSameColor :: Image -> (Int, Int) -> Color -> Bool
 isInBoundAndSameColor img (i,j) c = isInBound img (i,j) && selectC == c
     where selectC = img V.! i V.! j
 
+-- check if position if in bound
 isInBound :: Image -> (Int, Int) -> Bool
 isInBound img (i,j)
     | (0 <= i && i < xBound) && (0 <= j && j < yBound) = True
