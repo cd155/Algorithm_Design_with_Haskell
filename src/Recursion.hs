@@ -375,6 +375,22 @@ genPerm' = genPermHelper [[]]
     editing programs. That is, given a screen (represented by a 
     two-dimensional array of colors), a point, and a new color, fill in 
     the surrounding area until the color changes from the original color.
+
+    test case: fillUpColor image (0,0) Blue
+    
+    original image:
+    [
+        [Red,Red,Red],
+        [Red,Yellow,Red],
+        [Yellow,Yellow,Blue]
+    ]
+
+    expect image:
+    [
+        [Blue,Blue,Blue],
+        [Blue,Yellow,Blue],
+        [Yellow,Yellow,Blue]
+    ]
 -}
 
 data Color = Red | Yellow | Blue deriving Show
@@ -402,30 +418,27 @@ image = V.fromList
         V.fromList [Yellow, Yellow, Blue]
     ]
 
-image1 :: Image
-image1 = V.fromList
-    [
-        V.fromList [Red, Red],
-        V.fromList [Red, Yellow]
-    ]
+fillUpColor :: Image -> (Int, Int) -> Color -> Image
+fillUpColor img (i,j) c = foldl (\acc x -> paint acc x c ) img pList
+    where pList = findArea img (i,j)
 
 -- Paint a color in one location
 paint :: Image -> (Int, Int) -> Color -> Image
-paint vs (i, j) c = 
+paint vs (i,j) c  =
     fstHVects V.++ V.fromList[newPaintRow] V.++ V.drop 1 secHVects
-    where 
+    where
         (fstHVects, secHVects) = V.splitAt i vs
         (fstHPaintRow, secHPaintRow) = V.splitAt j (vs V.! i)
-        newPaintRow = 
+        newPaintRow =
             fstHPaintRow V.++ V.fromList[c] V.++ V.drop 1 secHPaintRow
 
 -- Find all locations which need to paint
 findArea :: Image -> (Int, Int) -> [(Int, Int)]
 findArea img (i,j) = uniq (
     (i,j):
-    findAreaOnDir img (i,j) boundC Up ++ 
-    findAreaOnDir img (i,j) boundC Down ++ 
-    findAreaOnDir img (i,j) boundC PLeft ++ 
+    findAreaOnDir img (i,j) boundC Up ++
+    findAreaOnDir img (i,j) boundC Down ++
+    findAreaOnDir img (i,j) boundC PLeft ++
     findAreaOnDir img (i,j) boundC PRight) []
     where boundC = img V.! i V.! j
 
@@ -441,31 +454,31 @@ findAreaOnDir img (i,j) c Up
         (i,j-1): findAreaOnDir img (i,j-1) c PLeft
     | isInBoundAndSameColor img (i-1,j) c =
         (i-1,j): findAreaOnDir img (i-1,j) c Up
-    | isInBoundAndSameColor img (i,j+1) c = 
+    | isInBoundAndSameColor img (i,j+1) c =
         (i,j+1): findAreaOnDir img (i,j+1) c PRight
     | otherwise = []
 findAreaOnDir img (i,j) c Down
-    | isInBoundAndSameColor img (i,j-1) c = 
+    | isInBoundAndSameColor img (i,j-1) c =
         (i,j-1): findAreaOnDir img (i,j-1) c PLeft
     | isInBoundAndSameColor img (i+1,j) c =
         (i+1,j): findAreaOnDir img (i+1,j) c Down
-    | isInBoundAndSameColor img (i,j+1) c = 
+    | isInBoundAndSameColor img (i,j+1) c =
         (i,j+1): findAreaOnDir img (i,j+1) c PRight
     | otherwise = []
 findAreaOnDir img (i,j) c PLeft
-    | isInBoundAndSameColor img (i-1,j) c = 
+    | isInBoundAndSameColor img (i-1,j) c =
         (i-1,j): findAreaOnDir img (i-1,j) c Up
-    | isInBoundAndSameColor img (i,j-1) c = 
+    | isInBoundAndSameColor img (i,j-1) c =
         (i,j-1): findAreaOnDir img (i,j-1) c PLeft
-    | isInBoundAndSameColor img (i+1,j) c = 
+    | isInBoundAndSameColor img (i+1,j) c =
         (i+1,j): findAreaOnDir img (i+1,j) c Down
     | otherwise = []
 findAreaOnDir img (i,j) c PRight
-    | isInBoundAndSameColor img (i-1,j) c = 
+    | isInBoundAndSameColor img (i-1,j) c =
         (i-1,j): findAreaOnDir img (i-1,j) c Up
-    | isInBoundAndSameColor img (i,j+1) c = 
+    | isInBoundAndSameColor img (i,j+1) c =
         (i,j+1): findAreaOnDir img (i,j+1) c PRight
-    | isInBoundAndSameColor img (i+1,j) c = 
+    | isInBoundAndSameColor img (i+1,j) c =
         (i+1,j): findAreaOnDir img (i+1,j) c Down
     | otherwise = []
 
@@ -474,7 +487,7 @@ isInBoundAndSameColor img (i,j) c = isInBound img (i,j) && selectC == c
     where selectC = img V.! i V.! j
 
 isInBound :: Image -> (Int, Int) -> Bool
-isInBound img (i,j) 
+isInBound img (i,j)
     | (0 <= i && i < xBound) && (0 <= j && j < yBound) = True
     | otherwise = False
     where xBound = length img
