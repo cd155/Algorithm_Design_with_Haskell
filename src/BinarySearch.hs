@@ -251,6 +251,9 @@ genNum xs = genNumHelper (setListBits xs initalBit) 0
     Given an M x N matrix in which each row and 
     each column is sorted in ascending order, 
     write a method to find an element.
+
+    test case: sortedMatrixSearch 110 matrixArray
+    expect: (2,2)
 -}
 sortedMatrixSearch :: Ord a => a -> [[a]] -> (Nat, Nat)
 sortedMatrixSearch t xs = 
