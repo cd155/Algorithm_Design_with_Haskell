@@ -37,7 +37,8 @@ https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215
   - [10.4 - Search in a sorted unknown size of array](https://github.com/cd155/algorithm-design-with-haskell/blob/72b0ae8680e18aba8021443534dbfe6d460a4419/src/BinarySearch.hs#L98)
   - [10.5 - Search in a sorted (but interspersed with empty strings) array](https://github.com/cd155/algorithm-design-with-haskell/blob/72b0ae8680e18aba8021443534dbfe6d460a4419/src/BinarySearch.hs#L142)
   - [10.7 - Generate a miss integer with large file but small memory](https://github.com/cd155/algorithm-design-with-haskell/blob/72b0ae8680e18aba8021443534dbfe6d460a4419/src/BinarySearch.hs#L203)
-  - 10.8, 10.9
+  - 10.8
+  - [10.9 - Find the element in a sorted matrix](https://github.com/cd155/algorithm-design-with-haskell/blob/72b0ae8680e18aba8021443534dbfe6d460a4419/src/BinarySearch.hs#L249)
 ## Tree
 - Academic Term Definition of Tree
 https://github.com/cd155/algorithm-design-with-haskell/blob/71661bb4fa30663da215351bfaf55cd768952af7/src/Tree.hs#L7-L11
